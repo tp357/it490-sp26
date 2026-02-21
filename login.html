@@ -33,7 +33,21 @@
 			const XMLHttpInstance = new XMLHttpRequest();
 			const url = "url";
 			XMLHttpInstance.open("POST", url, true);
-			XMLHttpInstance
+			XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+		XMLHttpInstance.onreadystatechange = function() {
+			if(XMLHttpInstance.readyState === 4 && XMLHttpInstance.status === 200) {
+				var response = JSON.parse(XMLHttpInstance.responseText);
+				console.log(response.responseText);
+
+			}
+
+
+		}else {
+			console.log(
+
+
+		}
+		XMLHttpInstance.send(jsonData);
 
 
 
