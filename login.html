@@ -13,13 +13,13 @@
 		<label>password</label>
 		<input type="password" id="password" required>
 
-		<button type="submit">Login/<button>
+		<button type="submit">Login</button>
 		
 	</form>
 
 	
 	<script>
-		document.getElementById("loginform").addEventListener("submit", function(even)) {
+		document.getElementById("loginform").addEventListener("submit", function(even) {
 			even.preventDefault();
 
 			const username = document.getElementById("username").value;
@@ -43,7 +43,7 @@
 
 		}
 		XMLHttpInstance.send(jsonData);
-		}
+		});
 	</script>
 </body>
 </html>
