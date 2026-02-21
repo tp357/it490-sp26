@@ -19,7 +19,7 @@
 
 	
 	<script>
-		document.getElementById("loginform").addEventListener("submit", function(even) {
+		document.getElementById("loginform").addEventListener("submit", function(even)) {
 			even.preventDefault();
 
 			const username = document.getElementById("username").value;
@@ -28,8 +28,6 @@
 			const data = [username, password];
 			const jsonData = JSON.stringify(data);
 			console.log(jsonData);
-
-		};
 			const XMLHttpInstance = new XMLHttpRequest();
 			const url = "url";
 			XMLHttpInstance.open("POST", url, true);
@@ -43,14 +41,12 @@
 
 
 		}else {
-			console.log(
+			console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
 
 
 		}
 		XMLHttpInstance.send(jsonData);
-
-
-
+		}
 	</script>
 </body>
 </html>
