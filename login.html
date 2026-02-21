@@ -13,7 +13,7 @@
 		<label>password</label>
 		<input type="password" id="password" required>
 
-		<button type="submit">Login<button>
+		<button type="submit">Login/<button>
 		
 	</form>
 
@@ -37,10 +37,7 @@
 				var response = JSON.parse(XMLHttpInstance.responseText);
 				console.log(response.responseText);
 
-			}
-
-
-		}else {
+			}else {
 			console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
 
 
