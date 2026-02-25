@@ -39,26 +39,22 @@
 
 
 			
-				if (XMLHttpInstance.status === 200 && response.status === "success") {
-					console.log(response);
-					window.location.href = "home.html";
+					if (XMLHttpInstance.status === 200 && response.status === "success") {
+						console.log(response);
+						window.location.href = "home.html";
 
-				}else {
-			 		console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
-					alert("login failure:" + (response.message));
-
-				
-				
-				}
+					}else {
+			 			console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
+						alert("login failure:" + (response.message));
+					}
 				}catch(err) {
 					console.error(XMLHttpInstance.responseText);
 					alert("Server Response Invalid");
-
-
-			};
-				XMLHttpInstance.send(jsonData);
-			});
-		}
+				}
+			}
+		};
+		XMLHttpInstance.send(jsonData);
+	});
 	</script>
 </body>
 </html>
