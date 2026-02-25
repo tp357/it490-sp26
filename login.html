@@ -29,13 +29,14 @@
 			const jsonData = JSON.stringify(data);
 			console.log(jsonData);
 			const XMLHttpInstance = new XMLHttpRequest();
-			const url = "url";
+			const url = "http://localhost/it490/backend/login.php";
 			XMLHttpInstance.open("POST", url, true);
 			XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
 		XMLHttpInstance.onreadystatechange = function() {
 			if(XMLHttpInstance.readyState === 4 && XMLHttpInstance.status === 200) {
 				var response = JSON.parse(XMLHttpInstance.responseText);
 				console.log(response);
+				window.location.href = "home.html";
 
 			}else {
 			console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
