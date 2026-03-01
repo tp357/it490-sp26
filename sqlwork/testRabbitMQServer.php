@@ -26,11 +26,11 @@ echo mysqli_num_rows($response);
 		}			
 	elseif(mysqli_num_rows($response)!=0){
 		echo "succesful login";
-		$testses="SELECt SESSIONID from sessions WHERE USERNAME='$username')";
+		$sestest="select * from sessions where USERNAME='$username'";
+		$testresult=$mydb->query($sestest);
+		if(mysqli_num_rows($testresult)!=0){
 		$sesadd="INSERT into sessions VALUES (UUID(), '$username')";
-		$sesresult=$mydb->query($testses);
-		if(mysqli_num_rows($sesresult)==0){
-			$mydb->query($sesadd);	
+		$mydb->query($sesadd);	
 		}
 		return true;
 	}
