@@ -13,12 +13,27 @@ function doLogin($username,$password)
 	return false;
 }
 echo "successfully connected to database".PHP_EOL;
-
-    $query = "select PASSWORD from users where USERNAME='$username';";
-	if(strcmp($query, $password) ==0){
+    $query = "select * from users where USERNAME='$username' AND PASSWORD='$password';";
+$response = $mydb->query($query);
+echo mysqli_num_rows($response);
+	if ($mydb->errno != 0)
+		{
+       		 echo "failed to execute query:".PHP_EOL;
+	        echo __FILE__.':'.__LINE__.":error: ".$mydb->error.PHP_EOL;
+	        exit(0);
+		}			
+	elseif(mysqli_num_rows($response)!=0){
+		echo "succesful login";
+		$testses="SELECt SESSIONID from sessions WHERE USERNAME='$username')";
+		$sesadd="INSERT into sessions VALUES (UUID(), '$username')";
+		$sesresult=$mydb->query($testses);
+		if(mysqli_num_rows($sesresult)==0){
+			$mydb->query($sesadd);	
+		}
 		return true;
 	}
 	else {
+	echo "login failed";
 		return false;
 	}
 
@@ -27,8 +42,22 @@ echo "successfully connected to database".PHP_EOL;
     //return false if not valid
 }
 
+function doValidate($sessionId){
+ $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
+        if ($mydb->errno != 0)
+{
+        echo "failed to connect to database: ". $mydb->error . PHP_EOL;
+        return false;
+}
+echo "successfully connected to database".PHP_EOL;
+
+
+
+}
+
 function requestProcessor($request)
 {
+	$returnstatus;
   echo "received request".PHP_EOL;
   var_dump($request);
   if(!isset($request['type']))
@@ -38,11 +67,15 @@ function requestProcessor($request)
   switch ($request['type'])
   {
     case "login":
-      return doLogin($request['username'],$request['password']);
+       $returnstatus=doLogin($request['username'],$request['password']);
     case "validate_session":
       return doValidate($request['sessionId']);
   }
-  return array("returnCode" => '0', 'message'=>"Server received request and processed");
+  if($returnstatus){
+  return array("status" => 'success', 'message'=>"Server received request and processed");
+  } else {
+	return array("status"=>"This shit ain't work");
+  }
 }
 
 $server = new rabbitMQServer("testRabbitMQ.ini","testServer");
