@@ -80,7 +80,8 @@ function requestProcessor($request)
   } else {
 	$message = array("status"=>"This shit ain't work");
   }
-  return $client->send_request($message);
+  
+  return $client->publish($message);
 }
 
 $server = new rabbitMQServer("testRabbitMQ.ini","AuthServer");
