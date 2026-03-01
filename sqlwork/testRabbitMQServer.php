@@ -4,6 +4,8 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
+$client = new rabbitMQClient("testRabbitMQ.ini", "SessionServer");
+
 function doLogin($username,$password)
 {
 	$mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
@@ -58,6 +60,7 @@ echo "successfully connected to database".PHP_EOL;
 function requestProcessor($request)
 {
 	$returnstatus = false;
+	$message = array();
   echo "received request".PHP_EOL;
   var_dump($request);
   if(!isset($request['type']))
@@ -71,14 +74,16 @@ function requestProcessor($request)
     case "validate_session":
       return doValidate($request['sessionId']);
   }
+  
   if($returnstatus){
-  return array("status" => 'success', 'message'=>"Server received request and processed");
+  	$message = array("status" => 'success', 'message'=>"Server received request and processed");
   } else {
-	return array("status"=>"This shit ain't work");
+	$message = array("status"=>"This shit ain't work");
   }
+  return $client->send_request($message);
 }
 
-$server = new rabbitMQServer("testRabbitMQ.ini","testServer");
+$server = new rabbitMQServer("testRabbitMQ.ini","AuthServer");
 
 echo "testRabbitMQServer BEGIN".PHP_EOL;
 $server->process_requests('requestProcessor');
