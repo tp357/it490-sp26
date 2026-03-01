@@ -40,10 +40,10 @@ class rabbitMQServer
 	{
 		// send the ack to clear the item from the queue
 		if ($msg->getRoutingKey() !== "*")
-    {
-      return;
-    }
-    $this->conn_queue->ack($msg->getDeliveryTag());
+		{
+			return;
+		}
+		$this->conn_queue->ack($msg->getDeliveryTag());
 		try
 		{
 			if ($msg->getReplyTo())
@@ -58,24 +58,24 @@ class rabbitMQServer
 					$response = call_user_func($this->callback,$payload);
 				}
 
-      $params = array();
-      $params['host'] = $this->BROKER_HOST;
-      $params['port'] = $this->BROKER_PORT;
-      $params['login'] = $this->USER;
-      $params['password'] = $this->PASSWORD;
-      $params['vhost'] = $this->VHOST;
-			$conn = new AMQPConnection($params);
-			$conn->connect();
-			$channel = new AMQPChannel($conn);
-			$exchange = new AMQPExchange($channel);
-      $exchange->setName($this->exchange);
-      $exchange->setType($this->exchange_type);
+				$params = array();
+				$params['host'] = $this->BROKER_HOST;
+				$params['port'] = $this->BROKER_PORT;
+				$params['login'] = $this->USER;
+				$params['password'] = $this->PASSWORD;
+				$params['vhost'] = $this->VHOST;
+				$conn = new AMQPConnection($params);
+				$conn->connect();
+				$channel = new AMQPChannel($conn);
+				$exchange = new AMQPExchange($channel);
+				$exchange->setName($this->exchange);
+				$exchange->setType($this->exchange_type);
 
-			$conn_queue = new AMQPQueue($channel);
-			$conn_queue->setName($msg->getReplyTo());
-			$replykey = $this->routing_key.".response";
-			$conn_queue->bind($exchange->getName(),$replykey);
-			$exchange->publish(json_encode($response),$replykey,AMQP_NOPARAM,array('correlation_id'=>$msg->getCorrelationId()));
+				$conn_queue = new AMQPQueue($channel);
+				$conn_queue->setName($msg->getReplyTo());
+				$replykey = $this->routing_key.".response";
+				$conn_queue->bind($exchange->getName(),$replykey);
+				$exchange->publish(json_encode($response),$replykey,AMQP_NOPARAM,array('correlation_id'=>$msg->getCorrelationId()));
 
 				return;
 			}
@@ -100,20 +100,20 @@ class rabbitMQServer
 		try
 		{
 			$this->callback = $callback;
-      $params = array();
-      $params['host'] = $this->BROKER_HOST;
-      $params['port'] = $this->BROKER_PORT;
-      $params['login'] = $this->USER;
-      $params['password'] = $this->PASSWORD;
-      $params['vhost'] = $this->VHOST;
+			$params = array();
+			$params['host'] = $this->BROKER_HOST;
+			$params['port'] = $this->BROKER_PORT;
+			$params['login'] = $this->USER;
+			$params['password'] = $this->PASSWORD;
+			$params['vhost'] = $this->VHOST;
 			$conn = new AMQPConnection($params);
 			$conn->connect();
 
 			$channel = new AMQPChannel($conn);
 
 			$exchange = new AMQPExchange($channel);
-      $exchange->setName($this->exchange);
-      $exchange->setType($this->exchange_type);
+			$exchange->setName($this->exchange);
+			$exchange->setType($this->exchange_type);
 
 			$this->conn_queue = new AMQPQueue($channel);
 			$this->conn_queue->setName($this->queue);

@@ -57,7 +57,7 @@ echo "successfully connected to database".PHP_EOL;
 
 function requestProcessor($request)
 {
-	$returnstatus;
+	$returnstatus = false;
   echo "received request".PHP_EOL;
   var_dump($request);
   if(!isset($request['type']))
