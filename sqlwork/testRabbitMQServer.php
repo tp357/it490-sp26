@@ -28,7 +28,7 @@ echo mysqli_num_rows($response);
 		echo "succesful login";
 		$sestest="select * from sessions where USERNAME='$username'";
 		$testresult=$mydb->query($sestest);
-		if(mysqli_num_rows($testresult)!=0){
+		if(mysqli_num_rows($testresult)==0){
 		$sesadd="INSERT into sessions VALUES (UUID(), '$username')";
 		$mydb->query($sesadd);	
 		}
@@ -44,19 +44,41 @@ echo mysqli_num_rows($response);
     //return false if not valid
 }
 
-function doValidate($sessionId){
+function doValidate($username){
  $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
         if ($mydb->errno != 0)
 {
         echo "failed to connect to database: ". $mydb->error . PHP_EOL;
         return false;
+	}
+
+	echo "successfully connected to database".PHP_EOL;
+	$valquery="SELECT SESSIONID FROM sessions WHERE USERNAME='$username'";
+	$valresponse=$mydb->query($valquery);
+	if(mysqli_num_rows($valresponse)!=0){
+		return $valresponse;
+	}
+	else{
+		return "No session in place"
+	}
 }
-echo "successfully connected to database".PHP_EOL;
-
-
+function doRegister {
+ $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
+        if ($mydb->errno != 0)
+{
+        echo "failed to connect to database: ". $mydb->error . PHP_EOL;
+        return false;
+        }
+	$usercheck="SELECT * FROM users WHERE USERNAME='$username'";
+	$namecheck=$mydb->query($usercheck);
+	if(mysqli_num_rows($namecheck)!=0){
+		return "username taken";
+	}
+	$regq="INSERT into USERS VALUES ('$username',SYSTIME(),'$password')";
+	$mydb->query($regq);
+	return "Registration complete";
 
 }
-
 function requestProcessor($request)
 {
 	$returnstatus = false;
@@ -72,7 +94,9 @@ function requestProcessor($request)
     case "login":
        $returnstatus=doLogin($request['username'],$request['password']);
     case "validate_session":
-      return doValidate($request['sessionId']);
+	    return doValidate($request['username']);
+    case "registration":
+	return doRegister($request['username'],$request['password']);
   }
   
   if($returnstatus){
