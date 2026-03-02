@@ -13,8 +13,8 @@
 		<label>password</label>
 		<input type="password" id="password" required>
 
-		<button type="submit">Login</button>
-		<button type="register"> Register</button>
+		<button type="submit" id = "login">Login</button>
+		<button type="submit" id = "register"> Register</button>
 	</form>
 
 	
@@ -22,14 +22,25 @@
 		document.getElementById("loginform").addEventListener("submit", function(even) {
 			even.preventDefault();
 
+			const button = even.submitter.id;
+
 			const username = document.getElementById("username").value;
 			const password = document.getElementById("password").value;
 
 			const data = {username: username, password: password};
 			const jsonData = JSON.stringify(data);
 			console.log(jsonData);
+			const url = "";
+			if (button === "login") {
+				url = "http://localhost/backend/login.php";
+			} else if (button === "register") {
+				url = "http://localhost/backend/register.php";
+
+
+
+			}
 			const XMLHttpInstance = new XMLHttpRequest();
-			const url = "http://localhost/backend/login.php";
+			
 			XMLHttpInstance.open("POST", url, true);
 			XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
 		XMLHttpInstance.onreadystatechange = function() {
@@ -41,7 +52,14 @@
 			
 					if (XMLHttpInstance.status === 200) {
 						console.log(response);
-						window.location.href = "home.html";
+						if (button === "login") {
+							window.location.href = "home.html";
+
+
+
+						}else if (button === "register") {
+							alert("You are Registered");
+						}
 
 					}else {
 			 			console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
