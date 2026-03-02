@@ -60,7 +60,7 @@ function doValidate($username){
 		return "No session in place";
 	}
 }
-function doRegister {
+function doRegister($username) {
  $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
         if ($mydb->errno != 0)
 {
