@@ -90,11 +90,14 @@ function requestProcessor($request)
   switch ($request['type'])
   {
     case "login":
-       $returnstatus=doLogin($request['username'],$request['password']);
+	    $returnstatus=doLogin($request['username'],$request['password']);
+	    break;
     case "validate_session":
 	    return doValidate($request['username']);
+	    break;
     case "registration":
-	return doRegister($request['username'],$request['password']);
+	    return doRegister($request['username'],$request['password']);
+	    break;
   }
   
   if($returnstatus){
