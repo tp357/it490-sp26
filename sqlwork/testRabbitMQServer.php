@@ -73,12 +73,12 @@ function doRegister($username) {
 	$namecheck=$mydb->query($usercheck);
 	if(mysqli_num_rows($namecheck)!=0){
 		echo "be original get your own user";
-		return "username taken";
+		return false;
 	}
 	$regq="INSERT into USERS VALUES ('$username',SYSTIME(),'$password')";
 	$mydb->query($regq);
 	echo "REGISTRATION WORKS YIPPEE";
-	return "Registration complete";
+	return true;
 
 }
 function requestProcessor($request)
@@ -100,7 +100,7 @@ function requestProcessor($request)
 	    return doValidate($request['username']);
 	    break;
     case "registration":
-	    return doRegister($request['username'],$request['password']);
+	    $returnstatus=doRegister($request['username'],$request['password']);
 	    break;
   }
   
