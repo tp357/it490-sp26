@@ -22,7 +22,8 @@
 		document.getElementById("loginform").addEventListener("submit", function(even) {
 			even.preventDefault();
 
-			const button = even.submitter.id;
+			var button = even.submitter.id;
+			//echo (button);
 
 			const username = document.getElementById("username").value;
 			const password = document.getElementById("password").value;
