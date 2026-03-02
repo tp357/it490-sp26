@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$client = new rabbitMQClient('config/be-db.ini', 'testServer');
+$client = new rabbitMQClient('config/servers.ini', 'AuthServer');
 
 $request = array('type' => 'registration', 'username' => $input['username'], 'password' => $input['password']
 );
