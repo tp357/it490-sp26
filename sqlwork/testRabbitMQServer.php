@@ -4,8 +4,6 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
-$client = new rabbitMQClient("testRabbitMQ.ini", "SessionServer");
-
 function doLogin($username,$password)
 {
 	$mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
@@ -105,7 +103,7 @@ function requestProcessor($request)
 	$message = array("status"=>"This shit ain't work");
   }
   
-  return $client->publish($message);
+  return $message;
 }
 
 $server = new rabbitMQServer("testRabbitMQ.ini","AuthServer");
