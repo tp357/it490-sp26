@@ -9,7 +9,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 $client = new rabbitMQClient('config/be-db.ini', 'testServer');
 
-$request = array('type' => 'registration', 'username' => $input[0], 'password' => $input[1]
+$request = array('type' => 'registration', 'username' => $input['username'], 'password' => $input['password']
 );
 
 $response = $client->send_request($request);
