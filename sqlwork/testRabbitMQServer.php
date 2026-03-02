@@ -54,9 +54,11 @@ function doValidate($username){
 	$valquery="SELECT SESSIONID FROM sessions WHERE USERNAME='$username'";
 	$valresponse=$mydb->query($valquery);
 	if(mysqli_num_rows($valresponse)!=0){
+		echo "found your session";
 		return $valresponse;
 	}
 	else{
+		echo "you have no session bro";
 		return "No session in place";
 	}
 }
@@ -70,10 +72,12 @@ function doRegister($username) {
 	$usercheck="SELECT * FROM users WHERE USERNAME='$username'";
 	$namecheck=$mydb->query($usercheck);
 	if(mysqli_num_rows($namecheck)!=0){
+		echo "be original get your own user";
 		return "username taken";
 	}
 	$regq="INSERT into USERS VALUES ('$username',SYSTIME(),'$password')";
 	$mydb->query($regq);
+	echo "REGISTRATION WORKS YIPPEE";
 	return "Registration complete";
 
 }
