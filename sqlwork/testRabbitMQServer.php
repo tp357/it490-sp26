@@ -57,7 +57,7 @@ function doValidate($username){
 		return $valresponse;
 	}
 	else{
-		return "No session in place"
+		return "No session in place";
 	}
 }
 function doRegister {
