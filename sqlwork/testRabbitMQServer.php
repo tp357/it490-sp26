@@ -109,7 +109,7 @@ function requestProcessor($request)
   } else {
 	$message = array("status"=>"This shit ain't work");
   }
-  
+echo $message;	 
   return $message;
 }
 
