@@ -53,10 +53,8 @@
 					if (XMLHttpInstance.status === 200) {
 						console.log(response);
 						if (button === "login") {
+							document.cookie = "username="+username;
 							window.location.href = "home.html";
-
-
-
 						}else if (button === "register") {
 							alert("You are Registered");
 						}

@@ -6,6 +6,43 @@
 <body> 
 	<h1>Welcome!</h1>
 	<p>You are logged in.</p>
+	<form id="validate">
+		<button type="submit">Validate</button>
+	</form>
+
+		<script>
+		document.getElementById("validate").addEventListener("submit", function(even) {
+			even.preventDefault();
+
+			console.log(document.cookie);
+			var url = "http://localhost/backend/validate.php";
+			const XMLHttpInstance = new XMLHttpRequest();
+			
+			XMLHttpInstance.open("POST", url, true);
+			XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+		XMLHttpInstance.onreadystatechange = function() {
+			if(XMLHttpInstance.readyState === 4) {
+				try {
+					const response = JSON.parse(XMLHttpInstance.responseText);
+
+
+			
+					if (XMLHttpInstance.status === 200) {
+						console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
+						alert("validation success:" + (response.message));
+					}else {
+			 			console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
+						alert("validation failure:" + (response.message));
+					}
+				}catch(err) {
+					console.error(XMLHttpInstance.responseText);
+					alert("Server Response Invalid");
+				}
+			}
+		};
+		XMLHttpInstance.send(jsonData);
+	});
+	</script>
 </body>
 
 
