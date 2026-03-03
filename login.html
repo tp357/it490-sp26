@@ -31,46 +31,63 @@
 			const jsonData = JSON.stringify(data);
 			console.log(jsonData);
 			var url = "";
-			if (button === "login") {
+
+			if (button === "login") 
+			{
 				url = "http://localhost/backend/login.php";
-			} else if (button === "register") {
+				console.log("Sending login")
+			} 
+			else if (button === "register") 
+			{
 				url = "http://localhost/backend/register.php";
-
-
-
+				console.log("Sending register")
+			} 
+			else 
+			{
+				console.log("Sending blank")
 			}
+
 			const XMLHttpInstance = new XMLHttpRequest();
 			
 			XMLHttpInstance.open("POST", url, true);
 			XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
-		XMLHttpInstance.onreadystatechange = function() {
-			if(XMLHttpInstance.readyState === 4) {
-				try {
-					const response = JSON.parse(XMLHttpInstance.responseText);
+			XMLHttpInstance.onreadystatechange = function() 
+			{
+				if(XMLHttpInstance.readyState === 4) 
+				{
+					try 
+					{
+						const response = JSON.parse(XMLHttpInstance.responseText);
 
+						if (XMLHttpInstance.status === 200) 
+						{
+							console.log(response);
+							if (button === "login") 
+							{
+								document.cookie = JSON.stringify({username: username});
+								window.location.href = "home.html";
+							}
+							else if (button === "register") 
+							{
+								alert("You are Registered");
+							}
 
-			
-					if (XMLHttpInstance.status === 200) {
-						console.log(response);
-						if (button === "login") {
-							document.cookie = "username="+username;
-							window.location.href = "home.html";
-						}else if (button === "register") {
-							alert("You are Registered");
+						} 
+						else 
+						{
+							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
+							alert("login failure:" + (response.message));
 						}
-
-					}else {
-			 			console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
-						alert("login failure:" + (response.message));
 					}
-				}catch(err) {
-					console.error(XMLHttpInstance.responseText);
-					alert("Server Response Invalid");
+					catch(err) 
+					{
+						console.error(XMLHttpInstance.responseText);
+						alert("Server Response Invalid");
+					}
 				}
-			}
-		};
-		XMLHttpInstance.send(jsonData);
-	});
+			};
+			XMLHttpInstance.send(jsonData);
+		});
 	</script>
 </body>
 </html>

