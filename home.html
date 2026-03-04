@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Home Page</title>
-</head>
-<body> 
 	<script>
 		var sessionID = localStorage.getItem('sessionID')
 		if ("sessionID" == null) {
 			window.location.replace("login.html");
 			console.log("null hit");
-		}</script>
+		}
+	</script>
+	<title>Home Page</title>
+</head>
+<body> 
+
 	<h1>Welcome!</h1>
 	<p>You are logged in.</p>
 	<form id="validate">
