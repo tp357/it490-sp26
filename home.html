@@ -10,11 +10,12 @@
 		<button type="submit">Validate</button>
 	</form>
 
-		<script>
-		document.getElementById("validate").addEventListener("submit", function(even) {
+	<script>
+		function requestValidation()
+		{
 			even.preventDefault();
 
-			console.log(document.cookie);
+			console.log(JSON.parse(document.cookie).sessionID);
 			var url = "http://localhost/backend/validate.php";
 			const XMLHttpInstance = new XMLHttpRequest();
 			
@@ -45,7 +46,8 @@
 				}
 			};
 			XMLHttpInstance.send(document.cookie);
-	});
+		};
+		setInterval(requestValidation, 30000);
 	</script>
 </body>
 

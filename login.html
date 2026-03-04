@@ -64,7 +64,7 @@
 							console.log(response);
 							if (button === "login") 
 							{
-								document.cookie = JSON.stringify({username: username});
+								document.cookie = response;
 								window.location.href = "home.html";
 							}
 							else if (button === "register") 
