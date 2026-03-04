@@ -17,6 +17,7 @@
 			var message = '{"sessionID": ' + sessionID + '}'
 			console.log(sessionID);
 			var url = "http://localhost/backend/validate.php";
+			console.log(message)
 			const XMLHttpInstance = new XMLHttpRequest();
 			
 			XMLHttpInstance.open("POST", url, true);
