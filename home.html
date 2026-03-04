@@ -14,7 +14,7 @@
 		function requestValidation()
 		{
 			var sessionID = localStorage.getItem('sessionID')
-			var message = '{"sessionID": ' + sessionID + "}"
+			var message = '{"sessionID": ' + sessionID + '}'
 			console.log(sessionID);
 			var url = "http://localhost/backend/validate.php";
 			const XMLHttpInstance = new XMLHttpRequest();
