@@ -4,7 +4,9 @@
 	<title>Home Page</title>
 </head>
 <body> 
-	<script>if ("sessionID" == null) {
+	<script>
+		var sessionID = localStorage.getItem('sessionID')
+		if ("sessionID" == null) {
 			window.location.replace("login.html");
 			console.log("null hit");
 		}</script>
