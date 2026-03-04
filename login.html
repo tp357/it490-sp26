@@ -20,6 +20,7 @@
 	
 	<script>
 		document.getElementById("loginform").addEventListener("submit", function(even) {
+			even.preventDefault();
 
 			var button = even.submitter.id;
 
