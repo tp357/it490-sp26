@@ -30,7 +30,11 @@ echo mysqli_num_rows($response);
 		$sesadd="INSERT into sessions VALUES (UUID(), '$username')";
 		$mydb->query($sesadd);	
 		}
-		return true;
+		else {
+			$row=mysqli_fetch_assoc($testresult);
+			$sesID=$row['SESSIONID'];
+		}
+		return $sesID;
 	}
 	else {
 	echo "login failed";
@@ -42,7 +46,7 @@ echo mysqli_num_rows($response);
     //return false if not valid
 }
 
-function doValidate($username){
+function doValidate($sesID){
  $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
         if ($mydb->errno != 0)
 {
@@ -51,15 +55,16 @@ function doValidate($username){
 	}
 
 	echo "successfully connected to database".PHP_EOL;
-	$valquery="SELECT SESSIONID FROM sessions WHERE USERNAME='$username'";
+	$valquery="SELECT * FROM sessions WHERE SESSIONID='$sesID'";
 	$valresponse=$mydb->query($valquery);
 	if(mysqli_num_rows($valresponse)!=0){
 		echo "found your session";
-		return $valresponse;
+		echo "returning session now";
+		return $sesID;
 	}
 	else{
 		echo "you have no session bro";
-		return "No session in place";
+		return NULL;
 	}
 }
 function doRegister($username, $password) {
@@ -86,27 +91,39 @@ function requestProcessor($request)
 {
 	$returnstatus = false;
 	$message = array();
+	$sessionID=NULL;
   echo "received request".PHP_EOL;
   var_dump($request);
   if(!isset($request['type']))
   {
+	  echo "bad messafe type";
     return "ERROR: unsupported message type";
   }
   switch ($request['type'])
   {
     case "login":
-	    $returnstatus=doLogin($request['username'],$request['password']);
+	    $sessionID=doLogin($request['username'],$request['password']);
+	    if($sessionID!=NULL){
+		$returnstatus=true;
+	    }
 	    break;
+	    
     case "validate_session":
-	    return doValidate($request['username']);
+	    $sessionID=doValidate($request['sessionID']);
+	    if($sessionID!=NULL){
+                $returnstatus=true;
+            }
+
 	    break;
     case "registration":
+	    
 	    $returnstatus=doRegister($request['username'],$request['password']);
 	    break;
   }
   
   if($returnstatus){
-  	$message = array("status" => 'success', 'message'=>"Server received request and processed");
+	  echo "here is the session ID", $sessionID;
+  	$message = array("status" => 'success', "sessionID" =>"$sessionID", 'message'=>"Server received request and processed");
   } else {
 	$message = array("status"=>"This shit ain't work");
   }
