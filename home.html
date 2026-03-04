@@ -4,6 +4,10 @@
 	<title>Home Page</title>
 </head>
 <body> 
+	<script>if ("sessionID" == null) {
+			window.location.replace("login.html");
+			console.log("null hit");
+		}</script>
 	<h1>Welcome!</h1>
 	<p>You are logged in.</p>
 	<form id="validate">
@@ -36,13 +40,17 @@
 							alert("validation success:" + (response.message));
 						} else 
 						{
+
+							window.location.replace("login.html")
 							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
 							alert("validation failure:" + (response.message));
+							
 						}
 					}catch(err) 
 					{
 						console.error(XMLHttpInstance.responseText);
 						alert("Server Response Invalid");
+						window.location.herf = "login.html";
 					}
 				}
 			};
