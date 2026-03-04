@@ -9,7 +9,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 $client = new rabbitMQClient('config/servers.ini', 'AuthServer');
 
-$request = array('type' => 'validate_session', 'username' => $input['username']);
+$request = array('type' => 'validate_session', 'sessionID' => $input['sessionID']);
 
 $response = $client->send_request($request);
 
