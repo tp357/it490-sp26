@@ -13,8 +13,9 @@
 	<script>
 		function requestValidation()
 		{
-
-			console.log(JSON.parse(document.cookie).sessionID);
+			var sessionID = localStorage.getItem('sessionID')
+			var message = '{"sessionID": ' + sessionID + "}"
+			console.log(sessionID);
 			var url = "http://localhost/backend/validate.php";
 			const XMLHttpInstance = new XMLHttpRequest();
 			
@@ -44,9 +45,9 @@
 					}
 				}
 			};
-			XMLHttpInstance.send(document.cookie);
+			XMLHttpInstance.send(message);
 		};
-		setInterval(requestValidation, 30000);
+		setInterval(requestValidation, 1000);
 	</script>
 </body>
 
