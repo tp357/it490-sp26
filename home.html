@@ -1,30 +1,14 @@
 <!DOCTYPE html>
 <html>
+		
 <head>
-	<script>
-		var sessionID = localStorage.getItem('sessionID')
-		if ("sessionID" == null) {
-			window.location.replace("login.html");
-			console.log("null hit");
-		}
-	</script>
-	<title>Home Page</title>
-</head>
-<body> 
-
-	<h1>Welcome!</h1>
-	<p>You are logged in.</p>
-	<form id="validate">
-		<button type="submit">Validate</button>
-	</form>
-
 	<script>
 		function requestValidation()
 		{
 			var sessionID = localStorage.getItem('sessionID')
 			var message = '{"sessionID": "' + sessionID + '"}'
 			console.log(sessionID);
-			var url = "http://localhost/backend/validate.php";
+			var url = "http://www.sample.com/backend/validate.php";
 			console.log(message)
 			const XMLHttpInstance = new XMLHttpRequest();
 			
@@ -45,7 +29,7 @@
 						} else 
 						{
 
-							window.location.replace("login.html")
+							window.location.replace("../index.html")
 							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
 							alert("validation failure:" + (response.message));
 							
@@ -60,8 +44,22 @@
 			};
 			XMLHttpInstance.send(message);
 		};
-		setInterval(requestValidation, 1000);
+
+		var sessionID = localStorage.getItem('sessionID')
+		if (sessionID == null) {
+			window.location.replace("../index.html");
+			console.log("null hit");
+		}
+		requestValidation()
+		setInterval(requestValidation, 5000);
 	</script>
+
+	<title>Home Page</title>
+</head>
+<body> 
+
+	<h1>Welcome!</h1>
+	<p id="login">Logging in...</p>
 </body>
 
 
