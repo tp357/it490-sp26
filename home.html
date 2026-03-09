@@ -50,6 +50,10 @@
 			window.location.replace("../index.html");
 			console.log("null hit");
 		}
+		function logout() {
+			localStorage.clear()
+			requestValidation()
+		}
 		requestValidation()
 		setInterval(requestValidation, 5000);
 	</script>
@@ -60,6 +64,7 @@
 
 	<h1>Welcome!</h1>
 	<p id="login">Logging in...</p>
+	<button id="logout" onclick="logout()">Logout</button>
 </body>
 
 
