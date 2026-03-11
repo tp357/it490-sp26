@@ -4,6 +4,17 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
+function getMovie(){
+ $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
+        if ($mydb->errno != 0)
+{
+        echo "failed to connect to database: ". $mydb->error . PHP_EOL;
+        return false;
+        }
+
+}
+
+
 
 function requestProcessor($request)
 {
@@ -27,7 +38,6 @@ function requestProcessor($request)
 			break;
   	}
   if($returnstatus){
-          echo "here is the session ID", $sessionID;
         $message = array("status" => 'success', 'message'=>"Server received request and processed");
   } else {
         $message = array("status"=>"This shit ain't work");
