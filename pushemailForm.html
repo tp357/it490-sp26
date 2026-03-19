@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<h1>Register for Push Notifications</h1>
+		<title>Register for Push Notifications</title>>
 	</head>
 
 	<body>
@@ -15,8 +15,54 @@
 			document.getElementById("pushform").addEventListener("submit", function(even) {
 				even.preventDefault();
 
+				const email = document.getElementById("email").value;
+				const data = {email: email};
+				const jsonData = JSON.stringify(data);
+				console.log("Data being sent:", jsonData);
+				var url = "";
+				const XMLHttpInstance = new XMLHttpRequest();
+				XMLHttpInstance.open("POST", url, true);
+				XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+				XMLHttpInstance.onreadystatechange = function () {
+					if(XMLHttpInstance.readyState === 4) {
+						const response = JSON.parse(XMLHttpInstance.responseText);
+						console.log("Response: " , response);
+						if (XMLHttpInstance.status === 200) {
+							console.log(response);
+							alert("Your Signed Up.");
+
+
+
+
+
+
+						}else {
+							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
+							alert("Sign Up Failure: " + response.message);
+
+
+
+
+						}else {
+							console.error(XNLHttpInstance.reponseText);
+							alert("Server Response Failure);
+
+
+						}
+
+
+					}
+
+
+
+
+
+
+				}
+
 
 			});
+			XMLHttpInstance.send(jsonData);
 
 
 
