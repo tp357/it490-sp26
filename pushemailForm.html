@@ -16,7 +16,8 @@
 				even.preventDefault();
 
 				const email = document.getElementById("email").value;
-				const data = {email: email};
+				const sessionid = localStorage.getItem("sessionID");
+				const data = {email: email, sessionid: sessionid};
 				const jsonData = JSON.stringify(data);
 				console.log("Data being sent:", jsonData);
 				var url = "";
