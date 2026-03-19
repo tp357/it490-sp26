@@ -32,13 +32,13 @@
 
 						}else {
 							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
-							alert("Sign Up Failure: " + response.message);
+							alert("Sign Up Failure: ");
 
 						}
 					}
 				};
+				XMLHttpInstance.send(jsonData);
 			});
-			XMLHttpInstance.send(jsonData);
 		</script>
 	</body>
 </html>
