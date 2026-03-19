@@ -25,49 +25,20 @@
 				XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
 				XMLHttpInstance.onreadystatechange = function () {
 					if(XMLHttpInstance.readyState === 4) {
-						const response = JSON.parse(XMLHttpInstance.responseText);
-						console.log("Response: " , response);
 						if (XMLHttpInstance.status === 200) {
+							const response = JSON.parse(XMLHttpInstance.responseText);
 							console.log(response);
 							alert("Your Signed Up.");
-
-
-
-
-
 
 						}else {
 							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
 							alert("Sign Up Failure: " + response.message);
 
-
-
-
-						}else {
-							console.error(XMLHttpInstance.reponseText);
-							alert("Server Response Failure");
-
-
 						}
-
-
 					}
-
-
-
-
-
-
-				}
-
-
+				};
 			});
 			XMLHttpInstance.send(jsonData);
-
-
-
 		</script>
-
-
 	</body>
 </html>
