@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>Forum</title>
+    </head>
+
+    <body>
+        
+	<nav>
+		<a href="home.html">Home</a>
+		<!--
+		<a href="watchlist.html">Watchlist</a> 
+		<a href="forum.html">Forum</a>
+		<a href="notifications.html">Notifications</a>
+	-->
+		<button id="logout" onclick="logout()">Logout</button>
+	</nav>
+
+    <div id="forumDetail">
+        <h1 id="forumTitle"></h1>
+        <p id="forumBody">
+
+        </p>
+    </div>
+
+    <div id="replies">
+        <h2>Replies</h2>
+
+        <h3>Post a Reply</h3>
+        <form id="replyForm">
+            <textarea id="replyText" required></textarea>
+            <button type="submit">Post Reply</button>
+        </form>
+    </div>
+</body>
+</html>

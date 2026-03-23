@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>Movie Page</title>
+    </head>
+
+    <body>
+        
+	<nav>
+		<a href="home.html">Home</a>
+		<!--
+		<a href="watchlist.html">Watchlist</a> 
+		<a href="forum.html">Forum</a>
+		<a href="notifications.html">Notifications</a>
+	-->
+		<button id="logout" onclick="logout()">Logout</button>
+	</nav>
+
+    <div id="movieDetails">
+        <h1>Title</h1>
+        <p>Synopsis: </p>
+        <p>Release Date: </p>
+        <p>Genre: </p>
+
+        <button id="addToWatchlist">Add to Watchlist</button>
+    </div>
+
+    <div id="reviews">
+        <h2>Reviews</h2>
+        <!--
+        <div class="review">
+            <p>User: </p>
+            <p>Rating: </p>
+            <p>Comment: </p>
+        </div>
+        -->
+        <h3>Post a Review</h3>
+        <form id="reviewForm">
+            <label>Rating:</label>
+            <select id="rating" name="rating" required>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+            <textarea id="reviewText" required></textarea>
+            <button type="submit">Post Review</button>
+        </form>
+    </div>
+
+    </body>
+</html>
