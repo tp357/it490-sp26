@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login Page</title>
+</head>
+<body>
+	<h1>login</h1>
+
+	<form id="loginform">
+		<label>username</label>
+		<input type="text" id="username" required>
+
+		<label>password</label>
+		<input type="password" id="password" required>
+
+		<button type="submit" id = "login">Login</button>
+		<button type="submit" id = "register"> Register</button>
+	</form>
+
+	
+	<script>
+		document.getElementById("loginform").addEventListener("submit", function(even) {
+			even.preventDefault();
+
+			var button = even.submitter.id;
+
+			const username = document.getElementById("username").value;
+			const password = document.getElementById("password").value;
+
+			const data = {username: username, password: password};
+			const jsonData = JSON.stringify(data);
+			console.log("Data being sent:", jsonData);
+			var url = "";
+
+			if (button === "login") 
+			{
+				url = "http://www.sample.com/backend/login.php";
+				console.log("Sending login")
+			} 
+			else if (button === "register") 
+			{
+				url = "http://www.sample.com/backend/register.php";
+				console.log("Sending register")
+			} 
+			else 
+			{
+				console.log("Sending blank")
+			}
+
+			const XMLHttpInstance = new XMLHttpRequest();
+			
+			XMLHttpInstance.open("POST", url, true);
+			XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+			XMLHttpInstance.onreadystatechange = function()
+			{
+				if(XMLHttpInstance.readyState === 4) 
+				{
+					try 
+					{
+						const response = JSON.parse(XMLHttpInstance.responseText);
+						console.log("Response: ", response)
+						if (XMLHttpInstance.status === 200) 
+						{
+							console.log(response);
+							if (button === "login") 
+							{
+								localStorage.setItem("sessionID", response.sessionID);
+								 window.location.replace("it490/home.html");
+							}
+							else if (button === "register") 
+							{
+								alert("You are Registered");
+							}
+
+						} 
+						else 
+						{
+							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
+							alert("login failure:" + (response.message));
+						}
+					}
+					catch(err) 
+					{
+						console.error(XMLHttpInstance.responseText);
+						alert("Server Response Invalid");
+					}
+				}
+			};
+			XMLHttpInstance.send(jsonData);
+		});
+	</script>
+</body>
+</html>
