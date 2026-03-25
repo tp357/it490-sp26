@@ -2,6 +2,189 @@
 <html>
     <head>
     <title>Movie Page</title>
+    <script>
+        window.onload = function() {
+            var movie_id = getMovieID();
+            if (movie_id) {
+                fetchMovieDetails(movie_id);
+                getReviews(movie_id);
+            } else {
+                document.getElementById("movieDetails").innerHTML = "<p>Invalid movie ID</p>";
+            }
+        };
+        function getMovieID(){
+            const params = new URLSearchParams(window.location.search);
+            return params.get('movie_id');
+        }
+
+        function fetchMovieDetails(movie_id) {
+            var url = "/backend/getOneMovie.php";
+            var message = JSON.stringify({ "movie_id": movie_id });
+            const XMLHttpInstance = new XMLHttpRequest();
+            XMLHttpInstance.open("POST", url, true);
+            XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+            XMLHttpInstance.onreadystatechange = function() {
+                if (XMLHttpInstance.readyState === 4) {
+                    try { 
+                        var response = JSON.parse(XMLHttpInstance.responseText);
+                        if (XMLHttpInstance.status === 200 && response.movie) {
+                            showMovie(response.movie);
+                        } else {
+                            document.getElementById("movieDetails").innerHTML = "<p>Results not found.</p>";
+                        }
+                    } catch(err) {
+                        document.getElementById("movieDetails").innerHTML = "<p>Error retrieving the movie.</p>";
+                    }
+                }
+            };
+            XMLHttpInstance.send(message);
+        }
+
+        function showMovie(movie) {
+            document.getElementById("movieDetails").innerHTML = `
+                <h1>${movie.title}</h1>
+                <img src="${movie.poster}" alt="Movie Poster" style="max-width:200px;">
+                <p>Overview: ${movie.plot}</p>
+                <p>Release Date: ${movie.releaseDate} | ${movie.Year}</p>
+                <p>Rating: ${movie.rating}</p>
+                <p>Genre: ${movie.genre}</p>
+                <p>Director: ${movie.director}</p>
+                <button id="addToWatchlist">Add to Watchlist</button>
+            `; // possibly add language, runtime, actors, country? idk 
+        }
+
+        		function requestValidation()
+		{
+			var sessionID = localStorage.getItem('sessionID')
+			var message = '{"sessionID": "' + sessionID + '"}'
+			console.log(sessionID);
+			var url = "http://www.sample.com/backend/validate.php";
+			console.log(message)
+			const XMLHttpInstance = new XMLHttpRequest();
+			
+			XMLHttpInstance.open("POST", url, true);
+			XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+			XMLHttpInstance.onreadystatechange = function() 
+			{
+				if(XMLHttpInstance.readyState === 4) 
+				{
+					try 
+					{
+						const response = JSON.parse(XMLHttpInstance.responseText);
+
+						if (XMLHttpInstance.status === 200) 
+						{
+							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
+							alert("validation success:" + (response.message));
+						} else 
+						{
+
+							window.location.replace("../index.html")
+							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
+							alert("validation failure:" + (response.message));
+							
+						}
+					}catch(err) 
+					{
+						console.error(XMLHttpInstance.responseText);
+						alert("Server Response Invalid");
+						window.location.herf = "login.html";
+					}
+				}
+			};
+			XMLHttpInstance.send(message);
+		};
+
+		var sessionID = localStorage.getItem('sessionID')
+		if (sessionID == null) {
+			window.location.replace("../index.html");
+			console.log("null hit");
+		}
+		function logout() {
+			localStorage.clear()
+			requestValidation()
+		}
+		requestValidation()
+		setInterval(requestValidation, 5000);
+
+        function getReviews(movie_id) {
+            var url = "/backend/getReviews.php";
+            var message = JSON.stringify({ "movie_id": movie_id });
+            const XMLHttpInstance = new XMLHttpRequest();
+            XMLHttpInstance.open("POST", url, true);
+            XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+            XMLHttpInstance.onreadystatechange = function() {
+                if (XMLHttpInstance.readyState === 4) {
+                    try { 
+                        var response = JSON.parse(XMLHttpInstance.responseText);
+                        if (XMLHttpInstance.status === 200 && response.reviews) {
+                            showReviews(response.reviews);
+                        } else {
+                            document.getElementById("reviewsList").innerHTML = "<p>No reviews found for this movie.</p>";
+                        }
+                    } catch(err) {
+                        document.getElementById("reviewsList").innerHTML = "<p>Error retrieving the reviews.</p>";
+                    }
+                }
+            };
+            XMLHttpInstance.send(message);
+        }
+
+        function showReviews(reviews) {
+            var list = document.getElementById("reviewsList");
+            list.innerHTML = '';
+            if (reviews.length === 0) {
+                list.innerHTML = "<p>No reviews found for this movie.</p>";
+                return;
+            }
+            reviews.forEach(function(review) {
+                var div = document.createElement("div");
+                div.className = "review";
+                div.innerHTML = `
+                    <p>User: ${review.username}</p>
+                    <p>Rating: ${review.rating}</p>
+                    <p>Comment: ${review.review_text}</p>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.getElementById("reviewForm");
+            if (form) {
+                form.onsubmit = function(e){
+                    e.preventDefault();
+                    var movie_id = getMovieID();
+                    var rating = document.getElementById("rating").value;
+                    var reviewText = document.getElementById("reviewText").value;
+                    var user_id = localStorage.getItem("user_id");
+                    var url = "/backend/addReview.php";
+                    var message = JSON.stringify({
+                        movie_id: movie_id,
+                        rating: rating,
+                        review: reviewText,
+                        user_id: user_id
+                    })
+                    const XMLHttpInstance = new XMLHttpRequest();
+                    XMLHttpInstance.open("POST", url, true);
+                    XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+                    XMLHttpInstance.onreadystatechange = function() {
+                        if (XMLHttpInstance.readyState === 4) {
+                                if (XMLHttpInstance.status === 200) {
+                                    alert("Review posted.");
+                                    getReviews(movie_id);
+                                    form.reset();
+                                } else {
+                                    alert("There was an issue posting the review.");
+                                }
+                            }
+                        }
+                    };
+                    XMLHttpInstance.send(message);
+                }
+            }
+        );
+    </script>
     </head>
 
     <body>
@@ -14,24 +197,11 @@
 		<button id="logout" onclick="logout()">Logout</button>
 	</nav>
 
-    <div id="movieDetails">
-        <h1>Title</h1>
-        <p>Synopsis: </p>
-        <p>Release Date: </p>
-        <p>Genre: </p>
-
-        <button id="addToWatchlist">Add to Watchlist</button>
-    </div>
+    <div id="movieDetails"></div> <!-- the javascript dumps the movie stuff here automatically-->
 
     <div id="reviews">
         <h2>Reviews</h2>
-        <!--
-        <div class="review">
-            <p>User: </p>
-            <p>Rating: </p>
-            <p>Comment: </p>
-        </div>
-        -->
+        <div id="reviewsList"></div> 
         <h3>Post a Review</h3>
         <form id="reviewForm">
             <label>Rating:</label>
@@ -46,6 +216,5 @@
             <button type="submit">Post Review</button>
         </form>
     </div>
-
     </body>
 </html>
