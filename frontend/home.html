@@ -56,6 +56,27 @@
 		}
 		requestValidation()
 		setInterval(requestValidation, 5000);
+
+		function findMovie() {
+			url = "/backend/getOneMovie.php"
+			movie_id = document.getElementById("searchInput").value;
+			message=JSON.stringify("movie_id": movie_id);
+			
+      XMLHttpInstance.open("POST", url, true);
+      XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+      XMLHttpInstance.onreadystatechange = function() {
+      if (XMLHttpInstance.readyState === 4) {
+        if (XMLHttpInstance.status === 200) {
+          	alert("Movie found.");
+          	getReviews(movie_id);
+          	form.reset();
+        	} else {
+          	alert("Movie unfound.");
+        	}
+      	}
+    	}
+    	XMLHttpInstance.send(message);
+ 		}
 	</script>
 
 	<title>Home Page</title>
@@ -77,7 +98,7 @@
 	
 	<div id="search">
 		<input type="text" id="searchInput" placeholder="Search Here.">
-		<button id="searchButton">Search</button>
+		<button id="searchButton" onclick="findMovie()">Search</button>
 	</div>
 
 	<div id="Recommendations">
