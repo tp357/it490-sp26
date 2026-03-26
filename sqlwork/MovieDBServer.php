@@ -30,10 +30,10 @@ function requestProcessor($request)
   }
   switch ($request['type'])
 	{
-		case "getmovie":
+		case "getreviews":
 			echo "hi this is debugging get :D";
 			break;
-		case "sendmovie":
+		case "sendreviews":
 			echo "hi this is debugging send :D";
 			break;
   	}
@@ -47,7 +47,7 @@ echo $message;
 }
 
 
-$server = new rabbitMQServer("Moviedb.ini","MovieDBServer");
+$server = new rabbitMQServer("Moviedb.ini","AuthServer");
 
 echo "MovieDBServer BEGIN".PHP_EOL;
 $server->process_requests('requestProcessor');
