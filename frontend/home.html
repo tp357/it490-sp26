@@ -58,25 +58,43 @@
 		setInterval(requestValidation, 5000);
 
 		function findMovie() {
-			url = "/backend/getOneMovie.php"
-			movie_id = document.getElementById("searchInput").value;
-			message=JSON.stringify("movie_id": movie_id);
-			
-      XMLHttpInstance.open("POST", url, true);
-      XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
-      XMLHttpInstance.onreadystatechange = function() {
-      if (XMLHttpInstance.readyState === 4) {
-        if (XMLHttpInstance.status === 200) {
-          	alert("Movie found.");
-          	getReviews(movie_id);
-          	form.reset();
-        	} else {
-          	alert("Movie unfound.");
-        	}
-      	}
-    	}
+			if (!movie_id.trim()) {
+    			document.getElementById("movieList").innerHTML = "<p>You should actually search something.</p>";
+    		return;
+			} // checks if there is actually a search query to not waste an api call
+
+			var url = "/backend/searchMovies.php";
+			var movie_id = document.getElementById("searchInput").value;
+			var message = JSON.stringify({"movie_id": movie_id});
+			const XMLHttpInstance = new XMLHttpRequest();
+      		XMLHttpInstance.open("POST", url, true);
+      		XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+      		XMLHttpInstance.onreadystatechange = function() {
+      			if (XMLHttpInstance.readyState === 4) {
+        			if (XMLHttpInstance.status === 200) {
+          				alert("Movie found.");
+						const response = JSON.parse(XMLHttpInstance.responseText);
+						displayMovies(response.movies);
+          				// getReviews(movie_id);
+          				document.getElementById("searchForm").reset();
+        			} else {
+          				document.getElementById("movieList").innerHTML = "<p>No movie found :(</p>";
+        			}
+      			}
+    		}
     	XMLHttpInstance.send(message);
  		}
+
+		function displayMovies(movies) {
+			var movieList = document.getElementById("movieList");
+			movieList.innerHTML = '<h2> Results: </h2>';
+			movies.forEach(function(movie) {
+				var listItem = document.createElement("li");
+				listItem.innerHTML = '<a href="movie.html?movie_id='
+				+ movie.id + '">' + movie.title + ' ('+ movie.year +')</a>';
+				movieList.appendChild(listItem);
+			});
+		}
 	</script>
 
 	<title>Home Page</title>
@@ -97,8 +115,10 @@
 	<h1>Movies</h1>
 	
 	<div id="search">
+		<form id="searchForm">
 		<input type="text" id="searchInput" placeholder="Search Here.">
 		<button id="searchButton" onclick="findMovie()">Search</button>
+		</form>
 	</div>
 
 	<div id="Recommendations">
@@ -119,14 +139,5 @@
 			<li>Movie 3</li>
 		</ul>-->
 </body>
-
-
-
-
-
-
-
-
-
 
 </html>

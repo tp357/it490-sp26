@@ -51,10 +51,28 @@
                 <p>Director: ${movie.director}</p>
                 <button id="addToWatchlist">Add to Watchlist</button>
             `; // possibly add language, runtime, actors, country? idk 
+            var movie_id = getMovieID();
+            document.getElementById("addToWatchlist").onclick = function() {
+                var user_id = localStorage.getItem("user_id");
+                var url = "/backend/addToWatchlist.php";
+                var message = JSON.stringify({ "movie_id": movie_id, "user_id": user_id });
+                const XMLHttpInstance = new XMLHttpRequest();
+                XMLHttpInstance.open("POST", url, true);
+                XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+                XMLHttpInstance.onreadystatechange = function() {
+                    if (XMLHttpInstance.readyState === 4) {
+                        if (XMLHttpInstance.status === 200) {
+                            alert("Movie added to watchlist.");
+                        } else {
+                            alert("An issue occurred somewhere.");
+                        }
+                    }
+                };
+                XMLHttpInstance.send(message);
+            };
         }
 
-        		function requestValidation()
-		{
+        function requestValidation(){
 			var sessionID = localStorage.getItem('sessionID')
 			var message = '{"sessionID": "' + sessionID + '"}'
 			console.log(sessionID);
@@ -97,7 +115,7 @@
 
 		var sessionID = localStorage.getItem('sessionID')
 		if (sessionID == null) {
-			window.location.replace("../index.html");
+			window.location.replace("login.html");
 			console.log("null hit");
 		}
 		function logout() {
