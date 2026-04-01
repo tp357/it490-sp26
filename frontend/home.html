@@ -58,14 +58,14 @@
 		setInterval(requestValidation, 5000);
 
 		function findMovie() {
+			var movie_id = document.getElementById("searchInput").value;
 			if (!movie_id.trim()) {
     			document.getElementById("movieList").innerHTML = "<p>You should actually search something.</p>";
     		return;
 			} // checks if there is actually a search query to not waste an api call
 
 			var url = "/backend/searchMovies.php";
-			var movie_id = document.getElementById("searchInput").value;
-			var message = JSON.stringify({"movie_id": movie_id});
+			var message = JSON.stringify({"query": movie_id});
 			const XMLHttpInstance = new XMLHttpRequest();
       		XMLHttpInstance.open("POST", url, true);
       		XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
