@@ -4,6 +4,76 @@
     <title>Watchlist</title>
     </head>
 
+    <script>
+    	function logout() {
+			localStorage.removeItem("sessionID");
+			window.location.href = "login.html";
+		}
+
+        window.onload = function() {
+            getWatchlist();
+        }
+
+        function getWatchlist() {
+            const sessionID = localStorage.getItem("sessionID");
+            const url ="../backend/getWatchlist.php";
+            const data = { sessionID: sessionID };
+            const XMLHttpInstance = new XMLHttpRequest();
+            XMLHttpInstance.open("POST", url, true);
+            XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+            XMLHttpInstance.onreadystatechange = function(){
+                if (XMLHttpInstance.readyState === 4){
+                    const response = JSON.parse(XMLHttpInstance.responseText);
+                    if (XMLHttpInstance.status === 200){
+                        displayWatchlist(response);
+                    } else {
+                        document.getElementById("watchlist").innerHTML = "<p>Your watchlist could not be retrieved.</p>";
+                    }
+                }
+            }
+            XMLHttpInstance.send(JSON.stringify(data));
+        }
+        
+        function displayWatchlist(response) {
+            const watchlistDiv = document.getElementById("watchlist");
+            if (!response.movies || response.movies.length === 0){
+                watchlistDiv.innerHTML = "<p>No movies in your watchlist.</p>";
+                return;
+            }
+            let html = "<div class='moviegrid'>";
+            response.movies.forEach(movie => {
+                html += ` <div class='movie-item'> <h3>${movie.title}</h3>
+                <p>Year: ${movie.year}</p> <p>Rating: ${movie.rating}</p>
+                <button onclick="removeFromWatchlist('${movie.title}')">Remove</button>
+                <a href="movie.html?movie_id=${movie.id}">Details</a>
+                </div> `; });
+            watchlistDiv.innerHTML = html;
+        }
+
+        function removeFromWatchlist(movieTitle){
+            const sessionID = localStorage.getItem("sessionID");
+            const url ="../backend/removeFromWatchlist.php";
+            const data = {sessionID: sessionID, movieTitle: movieTitle};
+            const XMLHttpInstance = new XMLHttpRequest();
+
+            XMLHttpInstance.open("POST", url, true);
+            XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+            XMLHttpInstance.onreadystatechange = function(){
+                if (XMLHttpInstance.readyState === 4){
+                    const response = JSON.parse(XMLHttpInstance.responseText);
+                    if (XMLHttpInstance.status === 200){
+                        alert("Movie removed from watchlist.");
+                        getWatchlist();
+                    } else {
+                        document.getElementById("watchlist").innerHTML = "<p>Your watchlist could not be updated.</p>";
+                    }
+                }
+            }
+            XMLHttpInstance.send(JSON.stringify(data));
+        }
+    </script>
+
+    
     <body>
         
 	<nav>
@@ -16,7 +86,7 @@
 
     <h1>My Watchlist</h1>
 
-    <div id="watchlist"?>
+    <div id="watchlist">
     <!-- call getWatchlist and also remove a movie from watchlist if wanted-->
     </div>
 </body>

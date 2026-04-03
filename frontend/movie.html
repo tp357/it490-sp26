@@ -18,7 +18,7 @@
         }
 
         function fetchMovieDetails(movie_id) {
-            var url = "/backend/getOneMovie.php";
+            var url = "../backend/getOneMovie.php";
             var message = JSON.stringify({ "movie_id": movie_id });
             const XMLHttpInstance = new XMLHttpRequest();
             XMLHttpInstance.open("POST", url, true);
@@ -202,6 +202,10 @@
                 }
             }
         );
+		function logout() {
+			localStorage.removeItem("sessionID");
+			window.location.href = "login.html";
+		}
     </script>
     </head>
 

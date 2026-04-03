@@ -8,7 +8,7 @@
 			var sessionID = localStorage.getItem('sessionID')
 			var message = '{"sessionID": "' + sessionID + '"}'
 			console.log(sessionID);
-			var url = "http://www.sample.com/backend/validate.php";
+			var url = "../backend/validate.php";
 			console.log(message)
 			const XMLHttpInstance = new XMLHttpRequest();
 			
@@ -38,7 +38,7 @@
 					{
 						console.error(XMLHttpInstance.responseText);
 						alert("Server Response Invalid");
-						window.location.herf = "login.html";
+						window.location.href = "login.html";
 					}
 				}
 			};
@@ -94,6 +94,10 @@
 				+ movie.id + '">' + movie.title + ' ('+ movie.year +')</a>';
 				movieList.appendChild(listItem);
 			});
+		}
+		function logout() {
+			localStorage.removeItem("sessionID");
+			window.location.href = "login.html";
 		}
 	</script>
 

@@ -31,7 +31,7 @@
 				const data = {email: email, sessionid: sessionid};
 				const jsonData = JSON.stringify(data);
 				console.log("Data being sent:", jsonData);
-				var url = "";
+				var url = "../backend/setNotifPrefs.php";
 				const XMLHttpInstance = new XMLHttpRequest();
 				XMLHttpInstance.open("POST", url, true);
 				XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
@@ -57,6 +57,10 @@
 				};
 				XMLHttpInstance.send(jsonData);
 			});
+			function logout() {
+				localStorage.removeItem("sessionID");
+				window.location.href = "login.html";
+			}
 		</script>
 	</body>
 </html>
