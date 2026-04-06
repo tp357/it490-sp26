@@ -4,30 +4,35 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
-function doUpdateProd($path){
+function doUpdateProd($path, $target){
+
+        $mydb = new mysqli('127.0.0.1','testuser','testpassword','deployment');
+        if ($mydb->errno != 0)
+{
+        echo "failed to connect to database: ". $mydb->error . PHP_EOL;
+	return false;
+	$query= "UPDATE deployment SET currentprod=false WHERE currentprod=true AND target='$target'";
+	$mydb->query($query);
+	$query="UPDATE deployment SET currentprod=true WHERE path='$path'";
+	$mydb->query($query);
+}
+
+
+}
+function doUpdateQA($hostname, $path, $target){
 
         $mydb = new mysqli('127.0.0.1','testuser','testpassword','deployment');
         if ($mydb->errno != 0)
 {
         echo "failed to connect to database: ". $mydb->error . PHP_EOL;
         return false;
-}
-
-
-}
-function doUpdateQA($path){
-
-        $mydb = new mysqli('127.0.0.1','testuser','testpassword','deployment');
-        if ($mydb->errno != 0)
-{
-        echo "failed to connect to database: ". $mydb->error . PHP_EOL;
-        return false;
-}
-	
+}	
+	$query= "INSERT INTO deployment VALUES('$path', false, '$target',CURRENT_DATE)";
+	$mydb->query($query);
 
 }
 
-function doFallback($target){
+function doFallback($hostname,$target){
   $mydb = new mysqli('127.0.0.1','testuser','testpassword','deployment');
         if ($mydb->errno != 0)
 {
@@ -56,10 +61,10 @@ function requestProcessor($request)
   switch ($request['type'])
   {
 	  case "updateProd":
-		  doUpdateProd($request['path']);
+		  doUpdateProd($request['path'], $request['target']);
 		  break;
 	case "updateQA":
-		doUpdateQA($request['path']);
+		doUpdateQA($request['path'], $request['target']);
 		break;
 	case "fallback":
 		doFallback($request['target']):
