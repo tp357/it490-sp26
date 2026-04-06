@@ -15,6 +15,12 @@ function doUpdateProd($path, $target){
 	$mydb->query($query);
 	$query="UPDATE deployment SET currentprod=true WHERE path='$path'";
 	$mydb->query($query);
+	$hostquery="SELECT hostname FROM hosts WHERE target='$target' AND enviro
+		nment= 'prod'";
+	$response=$mydb->query($hostquery);
+        $row=mysqli_fetch_assoc($result)
+        $hostname=$row('hostname')
+
 }
 
 
@@ -29,7 +35,10 @@ function doUpdateQA($hostname, $path, $target){
 }	
 	$query= "INSERT INTO deployment VALUES('$path', false, '$target',CURRENT_DATE)";
 	$mydb->query($query);
-
+	$hostquery="SELECT hostname FROM hosts WHERE target='$target' AND environment= 'QA'";
+	$response=$mydb->query($hostquery);
+	$row=mysqli_fetch_assoc($result)
+	$hostname=$row('hostname')
 }
 
 function doFallback($hostname,$target){
