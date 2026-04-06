@@ -30,9 +30,14 @@ function requestProcessor($request)
   }
   switch ($request['type'])
 	{
-		case "getreviews":
+ 		 case "get_one_movie":
 			echo "hi this is debugging get :D";
 			break;
+
+		case "get_movies":
+			echo "hi this is debugging get movies";
+			break;
+
 		case "sendreviews":
 			echo "hi this is debugging send :D";
 			break;
