@@ -2,7 +2,7 @@
 <?php
 require_once('path.inc');
 require_once('get_host_info.inc');
-require_once('rabbitMQLib.inc');
+require_once('RabbitMQLib.inc');
 
 function doUpdateProd($path, $target){
 
@@ -15,17 +15,24 @@ function doUpdateProd($path, $target){
 	$mydb->query($query);
 	$query="UPDATE deployment SET currentprod=true WHERE path='$path'";
 	$mydb->query($query);
-	$hostquery="SELECT hostname FROM hosts WHERE target='$target' AND enviro
+	$hostquery="SELECT hostname FROM HOSTS WHERE target='$target' AND enviro
 		nment= 'prod'";
 	$response=$mydb->query($hostquery);
-        $row=mysqli_fetch_assoc($result)
-        $hostname=$row('hostname')
+	$row=mysqli_fetch_assoc($result);
+	$hostname=$row('hostname');
+	$landingq="SELECT landing from HOSTS where hostname='$hostname'";
+	$landingres=$mydb->query($landingq);
+	$row=mysqli_fetch_assoc($landingres);
+	$landing=$row('landing');
+	 shell_exec("sftp $hostname:$landing <<< $path");
+
+	return true;
 
 }
 
 
 }
-function doUpdateQA($hostname, $path, $target){
+function doUpdateQA($path, $target){
 
         $mydb = new mysqli('127.0.0.1','testuser','testpassword','deployment');
         if ($mydb->errno != 0)
@@ -35,13 +42,20 @@ function doUpdateQA($hostname, $path, $target){
 }	
 	$query= "INSERT INTO deployment VALUES('$path', false, '$target',CURRENT_DATE)";
 	$mydb->query($query);
-	$hostquery="SELECT hostname FROM hosts WHERE target='$target' AND environment= 'QA'";
-	$response=$mydb->query($hostquery);
-	$row=mysqli_fetch_assoc($result)
-	$hostname=$row('hostname')
+	$hostquery="SELECT hostname FROM HOSTS WHERE target='$target' AND environment= 'QA'";
+        $response=$mydb->query($hostquery);
+        $row=mysqli_fetch_assoc($result);
+        $hostname=$row('hostname');
+        $landingq="SELECT landing from HOSTS where hostname='$hostname'";
+        $landingres=$mydb->query($landingq);
+        $row=mysqli_fetch_assoc($landingres);
+        $landing=$row('landing');
+         shell_exec("sftp $hostname:$landing <<< $path");
+        return true;
+true;
 }
 
-function doFallback($hostname,$target){
+function doFallback($target){
   $mydb = new mysqli('127.0.0.1','testuser','testpassword','deployment');
         if ($mydb->errno != 0)
 {
@@ -52,6 +66,16 @@ function doFallback($hostname,$target){
 	$result=$mydb->query($query);
 	$row=mysqli_fetch_assoc($result);
 	$filepath=$row('path');
+	 $hostquery="SELECT hostname FROM HOSTS WHERE target='$target' AND environment= 'QA'";
+        $response=$mydb->query($hostquery);
+        $row=mysqli_fetch_assoc($result);
+        $hostname=$row('hostname');
+        $landingq="SELECT landing from HOSTS where hostname='$hostname'";
+        $landingres=$mydb->query($landingq);
+        $row=mysqli_fetch_assoc($landingres);
+        $landing=$row('landing');
+   	shell_exec("sftp $hostname:$landing <<< $path");
+        return true;
 
 }
 
@@ -64,19 +88,19 @@ function requestProcessor($request)
   var_dump($request);
   if(!isset($request['type']))
   {
-          echo "bad messafe type";
+          echo "bad messafe type \n";
     return "ERROR: unsupported message type";
   }
   switch ($request['type'])
   {
 	  case "updateProd":
-		  doUpdateProd($request['path'], $request['target']);
+		  $returnstatus=doUpdateProd($request['path'], $request['target']);
 		  break;
 	case "updateQA":
-		doUpdateQA($request['path'], $request['target']);
+		$returnstatus=doUpdateQA($request['path'], $request['target']);
 		break;
 	case "fallback":
-		doFallback($request['target']):
+		$returnstatus=doFallback($request['target']);
 		break;
 
   }
