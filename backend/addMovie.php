@@ -14,7 +14,7 @@ if (!isset($input['title']) || !isset($input['year']) || !isset($input['rating']
     exit();
 }
 
-$client = new rabbitMQClient('config/servers.ini', 'AuthServer');
+$client = new rabbitMQClient('config/servers.ini', 'MovieDBServer');
 
 // this checks if the movie already is in the db
 $checkRequest = array( 'type' => 'if_movie_exists','title' => $input['title']);
