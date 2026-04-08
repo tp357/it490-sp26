@@ -64,7 +64,7 @@
     		return;
 			} // checks if there is actually a search query to not waste an api call
 
-			var url = "/backend/searchMovies.php";
+			var url = "../backend/pullAPI.php";
 			var message = JSON.stringify({"query": movie_id});
 			const XMLHttpInstance = new XMLHttpRequest();
       		XMLHttpInstance.open("POST", url, true);
