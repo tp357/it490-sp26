@@ -9,19 +9,19 @@ $api_key="b28607cf";
 $client = new rabbitMQClient('config/servers.ini', 'MovieDBServer');
 $input = json_decode(file_get_contents('php://input'), true);
 
-if (!isset($input['title'])) {
+if (!isset($input['query'])) {
     http_response_code(400);
     exit();
 }
 
-$title = $input['title'];
+$title = $input['query'];
 $checkRequest = array('type' => 'if_movie_exists', 'title' => $title);
 $checkResponse = $client -> send_request($checkRequest);
 if ($checkResponse['exists']) {
     $getRequest = array('type' => 'get_movie_by_title', 'title' => $title);
     $response = $client -> send_request($getRequest);
     http_response_code(200);
-    echo json_encode(array('status' => 'success', 'source' => 'database', 'movie' => $response));
+    echo json_encode(array('status' => 'success', 'source' => 'database', 'movies' => array($response)));
     exit();
 }
 
@@ -30,7 +30,7 @@ $apiResponse = file_get_contents($url);
 $data = json_decode($apiResponse, true);
 if ($data['Response'] !== 'True') {
     http_response_code(404);
-    echo json_encode($response);
+    echo json_encode(array('status' => 'error', 'message' => 'Movie not found'));
     exit();
 }
 
@@ -54,7 +54,7 @@ $request = array(
 $response = $client -> send_request($request);
 if ($response['status'] === 'success') {
     http_response_code(200);
-    echo json_encode($response);
+    echo json_encode(array('status' => 'success', 'source' => 'api', 'movies' => array($response)));
 } else {
     http_response_code(500);
     echo json_encode($response);
