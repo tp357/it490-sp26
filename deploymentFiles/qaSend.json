@@ -1,0 +1,7 @@
+{
+	"type": "updateQA",
+	"path": "/home/phoenix/packages/",
+	"target": "dmz",
+	"file": "test_target",
+	"url": "phoenix@phoenix-0"	
+}
