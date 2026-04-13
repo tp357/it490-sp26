@@ -15,16 +15,16 @@ function doUpdateProd($path, $target){
 	$mydb->query($query);
 	$query="UPDATE deployment SET currentprod=true WHERE path='$path'";
 	$mydb->query($query);
-	$hostquery="SELECT hostname FROM HOSTS WHERE target='$target' AND enviro
+	$hostquery="SELECT hostname FROM HOSTS WHERE service='$target' AND enviro
 		nment= 'prod'";
 	$response=$mydb->query($hostquery);
-	$row=mysqli_fetch_assoc($result);
+	$row=mysqli_fetch_assoc($response);
 	$hostname=$row('hostname');
 	$landingq="SELECT landing from HOSTS where hostname='$hostname'";
 	$landingres=$mydb->query($landingq);
 	$row=mysqli_fetch_assoc($landingres);
 	$landing=$row('landing');
-	 shell_exec("sftp $hostname:$landing <<< $path");
+	 shell_exec("rsync $path $hostname:$landing");
 
 	return true;
 
@@ -40,17 +40,17 @@ function doUpdateQA($path, $target){
         echo "failed to connect to database: ". $mydb->error . PHP_EOL;
         return false;
 }	
-	$query= "INSERT INTO deployment VALUES('$path', false, '$target',CURRENT_DATE)";
+	$query= "INSERT INTO deployment (path, currentprod, target, version) VALUES('$path', false, '$target',CURRENT_DATE)";
 	$mydb->query($query);
-	$hostquery="SELECT hostname FROM HOSTS WHERE target='$target' AND environment= 'QA'";
+	$hostquery="SELECT hostname FROM HOSTS WHERE service='$target' AND environment= 'QA'";
         $response=$mydb->query($hostquery);
-        $row=mysqli_fetch_assoc($result);
+        $row=mysqli_fetch_assoc($response);
         $hostname=$row('hostname');
         $landingq="SELECT landing from HOSTS where hostname='$hostname'";
         $landingres=$mydb->query($landingq);
         $row=mysqli_fetch_assoc($landingres);
         $landing=$row('landing');
-         shell_exec("sftp $hostname:$landing <<< $path");
+         shell_exec("rsync $path $hostname:$landing");
         return true;
 true;
 }
@@ -66,15 +66,17 @@ function doFallback($target){
 	$result=$mydb->query($query);
 	$row=mysqli_fetch_assoc($result);
 	$filepath=$row('path');
-	 $hostquery="SELECT hostname FROM HOSTS WHERE target='$target' AND environment= 'QA'";
+	$badq="UPDATE deployment SET bad=true WHERE path='$path'";
+	$mydb->query($badq);
+	 $hostquery="SELECT hostname FROM HOSTS WHERE service='$target' AND environment= 'QA'";
         $response=$mydb->query($hostquery);
-        $row=mysqli_fetch_assoc($result);
+        $row=mysqli_fetch_assoc($response);
         $hostname=$row('hostname');
         $landingq="SELECT landing from HOSTS where hostname='$hostname'";
         $landingres=$mydb->query($landingq);
         $row=mysqli_fetch_assoc($landingres);
         $landing=$row('landing');
-   	shell_exec("sftp $hostname:$landing <<< $path");
+   	shell_exec("rsync $path $hostname:$landing");
         return true;
 
 }
@@ -96,7 +98,8 @@ function requestProcessor($request)
 	  case "updateProd":
 		  $returnstatus=doUpdateProd($request['path'], $request['target']);
 		  break;
-	case "updateQA":
+	  case "updateQA":
+		 $returnstatus=true;
 		$returnstatus=doUpdateQA($request['path'], $request['target']);
 		break;
 	case "fallback":
@@ -119,5 +122,4 @@ $server->process_requests('requestProcessor');
 echo "DeploymentListener".PHP_EOL;
 exit();
 ?>
-
 
