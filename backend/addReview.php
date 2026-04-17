@@ -9,8 +9,8 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 $client = new rabbitMQClient('config/servers.ini', 'AuthServer');
 
-$request = array('type' => 'add_review', 'movie_id' => $input['movie_id'], 'user_id' => $input['user_id'], 
-'rating' => $input['rating'], 'review_text' => $input['review_text']);
+$request = array('type' => 'add_review', 'movie_id' => $input['movie_id'], 'sessionID' => $input['sessionID'], 
+'rating' => $input['rating']);
 
 $response = $client->send_request($request);
 

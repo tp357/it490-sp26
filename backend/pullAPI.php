@@ -37,7 +37,6 @@ if ($data['Response'] !== 'True') {
 $request = array(
     'type' => 'add_movie',
     'title' => $data['Title'],
-    'year' => $data['Year'],
     'rating' => $data['Rated'],
     'released' => $data['Released'],
     'runtime' => $data['Runtime'],
