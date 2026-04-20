@@ -9,8 +9,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 $client = new rabbitMQClient('config/servers.ini', 'AuthServer');
 
-$request = array('type' => 'registration', 'username' => $input['username'], 'password' => $input['password']
-);
+$request = array('type' => 'registration', 'username' => $input['username'], 'password' => $input['password'], 'phone' => $input['phone']);
 
 $response = $client->send_request($request);
 

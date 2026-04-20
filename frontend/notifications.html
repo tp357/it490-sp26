@@ -17,18 +17,37 @@
 		<h1>Register for Push Notifications</h1>
 		
 		<form id="pushform">
-			<label>email</label>
-			<input type="email" id="email" required>
+			<label>phone</label>
+			<input type="tel" id="phone" required>
 			<button type="submit" id="formsubmit">Submit</button>
 		</form>
 		
 		<script>
+			window.onload = function() {
+				const sessionid = localStorage.getItem("sessionID");
+				const url = "../backend/getNotifPrefs.php";
+				const data = {sessionID: sessionid};
+				
+				const XMLHttpInstance = new XMLHttpRequest();
+				XMLHttpInstance.open("POST", url, true);
+				XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+				XMLHttpInstance.onreadystatechange = function() {
+					if (XMLHttpInstance.readyState === 4 && XMLHttpInstance.status === 200) {
+						const response = JSON.parse(XMLHttpInstancexhr.responseText);
+						if (response.phone) {
+							document.getElementById("phone").value = response.phone;
+						}
+					}
+				};
+				XMLHttpInstance.send(JSON.stringify(data));
+			};
+
 			document.getElementById("pushform").addEventListener("submit", function(even) {
 				even.preventDefault();
 
-				const email = document.getElementById("email").value;
+				const phone = document.getElementById("phone").value;
 				const sessionid = localStorage.getItem("sessionID");
-				const data = {email: email, sessionid: sessionid};
+				const data = {phone: phone, sessionID: sessionid};
 				const jsonData = JSON.stringify(data);
 				console.log("Data being sent:", jsonData);
 				var url = "../backend/setNotifPrefs.php";

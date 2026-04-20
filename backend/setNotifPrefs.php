@@ -10,7 +10,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 $client = new rabbitMQClient('config/servers.ini', 'EmailServer');
 
 $request = array('type' => 'set_notifications', 'sessionID' => $input['sessionID'], 
-'email' => $input['email']);
+'phone' => $input['phone']);
 
 $response = $client->send_request($request);
 

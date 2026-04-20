@@ -4,7 +4,7 @@
 	<title>Login Page</title>
 </head>
 <body>
-	<h1>login</h1>
+	<h1>Login</h1>
 
 	<form id="loginform">
 		<label>username</label>
@@ -13,8 +13,11 @@
 		<label>password</label>
 		<input type="password" id="password" required>
 
+		<label>phone #</label>
+		<input type="tel" id="phone">
+
 		<button type="submit" id = "login">Login</button>
-		<button type="submit" id = "register"> Register</button>
+		<button type="submit" id = "register">Register</button>
 	</form>
 
 	
@@ -26,8 +29,12 @@
 
 			const username = document.getElementById("username").value;
 			const password = document.getElementById("password").value;
+			const phone = document.getElementById("phone").value;
 
-			const data = {username: username, password: password};
+			var data = {username: username, password: password};
+			if (button === "register") {
+				data.phone = phone;
+			}
 			const jsonData = JSON.stringify(data);
 			console.log("Data being sent:", jsonData);
 			var url = "";
