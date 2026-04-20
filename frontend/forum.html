@@ -3,13 +3,11 @@
 <head>
     <title>Forum</title>
     <script>
-        var currentThreadId = null;
-
         window.onload = function() {
-            loadThreads();
+            loadPosts();
         };
 
-        function loadThreads() {
+        function loadPosts() {
             var url = "../backend/getForum.php";
             var XMLHttpInstance = new XMLHttpRequest();
             XMLHttpInstance.open("POST", url, true);
@@ -17,89 +15,32 @@
             XMLHttpInstance.onreadystatechange = function() {
                 if (XMLHttpInstance.readyState === 4 && XMLHttpInstance.status === 200) {
                     var response = JSON.parse(XMLHttpInstance.responseText);
-                    showThreads(response.threads || []);
+                    showPosts(response.posts || []);
                 }
             };
             XMLHttpInstance.send();
         }
 
-        function showThreads(threads) {
-            var list = document.getElementById("threadList");
+        function showPosts(posts) {
+            var list = document.getElementById("postList");
             list.innerHTML = "";
-            if (threads.length === 0) {
-                list.innerHTML = "<p>No threads yet.</p>";
+            if (posts.length === 0) {
+                list.innerHTML = "<p>No posts yet.</p>";
                 return;
             }
-            threads.forEach(function(t) {
+            posts.forEach(function(p) {
                 var div = document.createElement("div");
-                div.innerHTML = '<a href="#" onclick="viewThread(' + t.id + '); return false;">' + t.title + "</a> by " + t.username;
+                var deleteButton = "";
+                if (p.user_id == localStorage.getItem("user_id")) {
+                    deleteButton = ' <button onclick="deletePost(' + p.id + ')">Delete</button>';
+                }
+                div.innerHTML = "<p><b>" + p.username + ":</b> " + p.content + deleteButton + "</p>";
                 list.appendChild(div);
             });
         }
 
-        function viewThread(threadId) {
-            currentThreadId = threadId;
-            document.getElementById("threadListView").style.display = "none";
-            document.getElementById("threadDetailView").style.display = "block";
-            
-            var url = "../backend/getThread.php";
-            var XMLHttpInstance = new XMLHttpRequest();
-            XMLHttpInstance.open("POST", url, true);
-            XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
-            XMLHttpInstance.onreadystatechange = function() {
-                if (XMLHttpInstance.readyState === 4 && XMLHttpInstance.status === 200) {
-                    var response = JSON.parse(XMLHttpInstance.responseText);
-                    showThreadDetail(response.thread, response.posts || []);
-                }
-            };
-            XMLHttpInstance.send(JSON.stringify({thread_id: threadId}));
-        }
-
-        function showThreadDetail(thread, posts) {
-            document.getElementById("threadTitle").textContent = thread.title;
-            document.getElementById("threadBody").textContent = thread.content;
-            
-            var list = document.getElementById("postList");
-            list.innerHTML = "";
-            if (posts.length === 0) {
-                list.innerHTML = "<p>No replies yet.</p>";
-            } else {
-                posts.forEach(function(p) {
-                    var div = document.createElement("div");
-                    var deleteButton = "";
-                    if (p.user_id == localStorage.getItem("user_id")) {
-                        deleteButton = ' <button onclick="deletePost(' + p.id + ')">Delete</button>';
-                    }
-                    div.innerHTML = "<p><b>" + p.username + ":</b> " + p.content + deleteButton + "</p>";
-                    list.appendChild(div);
-                });
-            }
-        }
-
-        function createThread() {
-            var title = document.getElementById("newTitle").value;
-            var content = document.getElementById("newContent").value;
-            var user_id = localStorage.getItem("user_id");
-            
-            var url = "../backend/createThread.php";
-            var XMLHttpInstance = new XMLHttpRequest();
-            XMLHttpInstance.open("POST", url, true);
-            XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
-            XMLHttpInstance.onreadystatechange = function() {
-                if (XMLHttpInstance.readyState === 4 && XMLHttpInstance.status === 200) {
-                    alert("Thread made!");
-                    document.getElementById("newTitle").value = "";
-                    document.getElementById("newContent").value = "";
-                    loadThreads();
-                } else if (XMLHttpInstance.readyState === 4) {
-                    alert("Failed to create thread.");
-                }
-            };
-            XMLHttpInstance.send(JSON.stringify({title: title, content: content, user_id: user_id}));
-        }
-
         function addPost() {
-            var content = document.getElementById("replyText").value;
+            var content = document.getElementById("postText").value;
             var user_id = localStorage.getItem("user_id");
             
             var url = "../backend/addPost.php";
@@ -108,13 +49,13 @@
             XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
             XMLHttpInstance.onreadystatechange = function() {
                 if (XMLHttpInstance.readyState === 4 && XMLHttpInstance.status === 200) {
-                    document.getElementById("replyText").value = "";
-                    viewThread(currentThreadId);
+                    document.getElementById("postText").value = "";
+                    loadPosts();
                 } else if (XMLHttpInstance.readyState === 4) {
                     alert("Failed to create post.");
                 }
             };
-            XMLHttpInstance.send(JSON.stringify({thread_id: currentThreadId, content: content, user_id: user_id}));
+            XMLHttpInstance.send(JSON.stringify({content: content, user_id: user_id}));
         }
 
         function deletePost(postId) {
@@ -127,18 +68,12 @@
             XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
             XMLHttpInstance.onreadystatechange = function() {
                 if (XMLHttpInstance.readyState === 4 && XMLHttpInstance.status === 200) {
-                    viewThread(currentThreadId);
+                    loadPosts();
                 } else if (XMLHttpInstance.readyState === 4) {
                     alert("Failed to remove post.");
                 }
             };
             XMLHttpInstance.send(JSON.stringify({post_id: postId, user_id: user_id}));
-        }
-
-        function backToList() {
-            document.getElementById("threadListView").style.display = "block";
-            document.getElementById("threadDetailView").style.display = "none";
-            currentThreadId = null;
         }
 
         function logout() {
@@ -157,24 +92,9 @@
 		<button id="logout" onclick="logout()">Logout</button>
     </nav>
 
-    <div id="threadListView">
-        <h1>Forum Threads</h1>
-        <div id="threadList"></div>
-        
-        <h2>Create New Thread</h2>
-        <input type="text" id="newTitle" required><br><br>
-        <textarea id="newContent" required></textarea><br>
-        <button onclick="createThread()">Create Thread</button>
-    </div>
-
-    <div id="threadDetailView" style="display:none;">
-        <button onclick="backToList()">Back to Threads</button>
-        <h1 id="threadTitle"></h1>
-        <p id="threadBody"></p>
-        
-        <h2>Replies</h2>
-        <div id="postList"></div>
-        
+    <h1>Discussion Forum</h1>
+    <div id="postList"></div>
+    
         <h3>Post a Reply</h3>
         <textarea id="replyText" required></textarea>
         <button onclick="addPost()">Post Reply</button>
