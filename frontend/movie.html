@@ -163,34 +163,32 @@
                 // Show edit/delete only if this is current user's review
                 if (review.user_id == currentUserId) {
                     buttons = `
-                        <button onclick="editReview(${review.id}, ${review.rating}, '${review.review_text || ''}')">Edit</button>
-                        <button onclick="deleteReview(${review.id})">Delete</button>
+                        <button onclick="editReview(${review.rating})">Edit</button>
+                        <button onclick="deleteReview()">Delete</button>
                     `;
                 }
                 div.innerHTML = `
                     <p>User: ${review.username}</p>
                     <p>Rating: ${review.rating}</p>
-                    ${review.review_text ? `<p>${review.review_text}</p>` : ''}
                     ${buttons}
                 `;
                 list.appendChild(div);
             });
         }
 
-        function editReview(reviewId, currentRating, currentText) {
+        function editReview(currentRating) {
             var newRating = prompt("Enter new rating (1-5):", currentRating);
             if (!newRating || newRating < 1 || newRating > 5) {
                 alert("Invalid rating");
                 return;
             }
-            var newText = prompt("Enter review text:", currentText) || '';
-            var user_id = localStorage.getItem("user_id");
+            var sessionID = localStorage.getItem("sessionID");
+            var movie_id = getMovieID();
             var url = "/backend/updateReview.php";
             var message = JSON.stringify({
-                review_id: reviewId,
-                rating: newRating,
-                review_text: newText,
-                user_id: user_id
+                movie_id: movie_id,
+                sessionID: sessionID,
+                rating: newRating
             });
             const XMLHttpInstance = new XMLHttpRequest();
             XMLHttpInstance.open("POST", url, true);
@@ -208,13 +206,14 @@
             XMLHttpInstance.send(message);
         }
 
-        function deleteReview(reviewId) {
+        function deleteReview() {
             if (!confirm("Delete your review?")) return;
-            var user_id = localStorage.getItem("user_id");
+            var sessionID = localStorage.getItem("sessionID");
+            var movie_id = getMovieID();
             var url = "/backend/deleteReview.php";
             var message = JSON.stringify({
-                review_id: reviewId,
-                user_id: user_id
+                movie_id: movie_id,
+                sessionID: sessionID
             });
             const XMLHttpInstance = new XMLHttpRequest();
             XMLHttpInstance.open("POST", url, true);
