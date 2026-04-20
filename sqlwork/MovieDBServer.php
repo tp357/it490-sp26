@@ -4,15 +4,7 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
-function getMovie(){
- $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
-        if ($mydb->errno != 0)
-{
-        echo "failed to connect to database: ". $mydb->error . PHP_EOL;
-        return false;
-        }
 
-}
 
 function addMovie($title, $year, $rating, $released, $runtime, $genre, $director, $writer, $actors, $plot, $language, $country, $poster){
 
@@ -47,12 +39,56 @@ function movieCheck($title){
 	}
 }
 
+function addReview($title, $rating, $sessionid) {
+ $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
+        if ($mydb->errno != 0)
+{
+        echo "failed to connect to database: ". $mydb->error . PHP_EOL;
+        return false;
+	}
+	$userq="SELECT * FROM users WHERE SESSIONID='$sessionid";
+	$row=mysqli_fetch_row($userq);
+	$username=$row('USERNAME');
+	$addreviewq="INSERT INTO reviews (RATING, TITLE, USERNAME)  VALUES ('$rating', '$title', '$username')";
+	$mydb->query($addreviewq);
+	return true;
+}
+
+
+function getReviews($movieid){
+	 $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
+        if ($mydb->errno != 0)
+{
+        echo "failed to connect to database: ". $mydb->error . PHP_EOL;
+        return false;
+        }
+	$getquery="SELECT * FROM reviews WHERE MOVIE='$movieid'";
+	$reviews=$mydb->query($getquery);
+	return $reviews;
+}
+
+function getMovie($movie){
+    $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
+        if ($mydb->errno != 0)
+{
+        echo "failed to connect to database: ". $mydb->error . PHP_EOL;
+        return false;
+        }
+	$getquery="SELECT * FROM movies WHERE TITLE='$movie'";
+	$result=$mydb->query($getquery);
+	return $result;
+
+}
+
 
 function requestProcessor($request)
 {
         $returnstatus = false;
         $message = array();
 	$exists=NULL;
+	$ratings=NULL;
+	$movie=null;
+
   echo "received request".PHP_EOL;
   var_dump($request);
   if(!isset($request['type']))
@@ -74,19 +110,33 @@ function requestProcessor($request)
 			$exists=$returnstatus
 			echo "hi this is debugging movie check\n";		
 			break;
-		case "get_movies":
-			echo "hi this is debugging get movies";
+		 
+		 case "add_review":
+			$returnstatus=addReview($request['movie_id'], $request['rating'], $request['sessionid']);
+			echo "this is me debugging addmovie which adds a rating\n "
+		 case "get_one_movie":
+			 $movie=getMovie($request['movie_id']);
+			 if ($movie!=NULL){
+				 $returnstatus=true;
+			 }
 			break;
 
-		case "sendreviews":
-			echo "hi this is debugging send :D";
+		case "get_reviews":
+			$ratings=getReviews($request['movie_id']);
+			if ($ratings!=NULL){
+				$returnstatus=true;
+			}
 			break;
+
   	}
   if($returnstatus && $exists){
         $message = array("status" => 'success', 'message'=>"Server received request and processed", 'exists'=>"$exists");
-  } elseif {
-        $message = array("status" => 'success', 'message'=>"Server received request and processed");
-	}else {
+  } elseif($ratings!=NULL) {
+        $message = array("status" => 'success', 'message'=>"Server received request and processed". 'ratings'=>"$ratings");
+  } elseif ($movie!=NULL){
+	 $message = array("status" => 'success', 'message'=>"Server received request and processed". 'movie'=>"$movie");
+  }
+  else {
 	$exists=false;
         $message = array("exists"=>"$exists");
   }
