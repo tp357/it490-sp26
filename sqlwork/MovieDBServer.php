@@ -49,7 +49,8 @@ function addReview($title, $rating, $sessionid) {
 	$userq="SELECT * FROM users WHERE SESSIONID='$sessionid";
 	$row=mysqli_fetch_row($userq);
 	$username=$row('USERNAME');
-	$addreviewq="INSERT INTO reviews (RATING, TITLE, USERNAME)  VALUES ('$rating', '$title', '$username')";
+	$ratingid= $username . $title;
+	$addreviewq="INSERT INTO reviews (RATING, TITLE, USERNAME, ratingid)  VALUES ('$rating', '$title', '$username', '$ratingid')";
 	$mydb->query($addreviewq);
 	return true;
 }
@@ -80,6 +81,22 @@ function getMovie($movie){
 
 }
 
+function updateReview($title, $sessionid, $rating){
+ $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
+        if ($mydb->errno != 0)
+{
+        echo "failed to connect to database: ". $mydb->error . PHP_EOL;
+        return false;
+        }
+        $userq="SELECT * FROM users WHERE SESSIONID='$sessionid";
+        $row=mysqli_fetch_row($userq);
+        $username=$row('USERNAME');
+        $ratingid= $username . $title;
+	$updateq= "UPDATE reviews set RATING='$rating' where ratingid='$ratingid'";
+	$mydb->query($updateq);
+	return true;
+
+	}
 
 function requestProcessor($request)
 {
@@ -126,6 +143,10 @@ function requestProcessor($request)
 			if ($ratings!=NULL){
 				$returnstatus=true;
 			}
+			break;
+
+		case "update_review":
+			$returnstatus=updateReview($request['movie_id'], $request['sessionid'], $request['rating']);
 			break;
 
   	}
