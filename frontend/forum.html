@@ -40,7 +40,7 @@
         }
 
         function addPost() {
-            var content = document.getElementById("postText").value;
+            var content = document.getElementById("replyText").value;
             var user_id = localStorage.getItem("user_id");
             
             var url = "../backend/addPost.php";
@@ -49,7 +49,7 @@
             XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
             XMLHttpInstance.onreadystatechange = function() {
                 if (XMLHttpInstance.readyState === 4 && XMLHttpInstance.status === 200) {
-                    document.getElementById("postText").value = "";
+                    document.getElementById("replyText").value = "";
                     loadPosts();
                 } else if (XMLHttpInstance.readyState === 4) {
                     alert("Failed to create post.");
@@ -95,9 +95,8 @@
     <h1>Discussion Forum</h1>
     <div id="postList"></div>
     
-        <h3>Post a Reply</h3>
-        <textarea id="replyText" required></textarea>
-        <button onclick="addPost()">Post Reply</button>
-    </div>
+    <h3>Post a Reply</h3>
+    <textarea id="replyText" required></textarea><br>
+    <button onclick="addPost()">Post Reply</button>
 </body>
 </html>
