@@ -4,35 +4,36 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('RabbitMQLib.inc');
 
-function doUpdateProd($path, $target){
+function doUpdateProd($path, $target, $file){
 
         $mydb = new mysqli('127.0.0.1','testuser','testpassword','deployment');
         if ($mydb->errno != 0)
 {
         echo "failed to connect to database: ". $mydb->error . PHP_EOL;
 	return false;
+}
 	$query= "UPDATE deployment SET currentprod=false WHERE currentprod=true AND target='$target'";
 	$mydb->query($query);
-	$query="UPDATE deployment SET currentprod=true WHERE path='$path'";
+	$query="UPDATE deployment SET currentprod=true WHERE path='$path$file'";
 	$mydb->query($query);
-	$hostquery="SELECT hostname FROM HOSTS WHERE service='$target' AND enviro
-		nment= 'prod'";
+	$hostquery="SELECT hostname FROM HOSTS WHERE service='$target' AND environment= 'prod'";
 	$response=$mydb->query($hostquery);
 	$row=mysqli_fetch_assoc($response);
-	$hostname=$row('hostname');
+	$hostname=$row['hostname'];
 	$landingq="SELECT landing from HOSTS where hostname='$hostname'";
 	$landingres=$mydb->query($landingq);
 	$row=mysqli_fetch_assoc($landingres);
-	$landing=$row('landing');
+	$landing=$row['landing'];
+	if(strcmp($hostname, "tirth@it490frontendprod") || strcmp($hostname, "tirth@it490frontendqa")){
+		shell_exec("rsync  -e 'ssh -i ~/.ssh/deploymentkey' $path$file $hostname:$landing");
+	} else {
 	 shell_exec("rsync $path $hostname:$landing");
-
+	}
 	return true;
 
 }
 
-
-}
-function doUpdateQA($path, $target){
+function doUpdateQA($path, $target, $file){
 
         $mydb = new mysqli('127.0.0.1','testuser','testpassword','deployment');
         if ($mydb->errno != 0)
@@ -40,22 +41,29 @@ function doUpdateQA($path, $target){
         echo "failed to connect to database: ". $mydb->error . PHP_EOL;
         return false;
 }	
-	$query= "INSERT INTO deployment (path, currentprod, target, version) VALUES('$path', false, '$target',CURRENT_DATE)";
+	$query= "INSERT INTO deployment (path, currentprod, target, version) VALUES('$path$file', false, '$target',CURRENT_DATE)";
 	$mydb->query($query);
 	$hostquery="SELECT hostname FROM HOSTS WHERE service='$target' AND environment= 'QA'";
         $response=$mydb->query($hostquery);
         $row=mysqli_fetch_assoc($response);
-        $hostname=$row('hostname');
+	$hostname=$row['hostname'];
+	echo "here is the host $hostname \n";
         $landingq="SELECT landing from HOSTS where hostname='$hostname'";
         $landingres=$mydb->query($landingq);
         $row=mysqli_fetch_assoc($landingres);
-        $landing=$row('landing');
-         shell_exec("rsync $path $hostname:$landing");
-        return true;
+	$landing=$row['landing'];
+	echo "here is the landing $landing \n";
+	echo "here is the path $path$file \n";
+	 if(strcmp($hostname, "tirth@it490frontendprod") || strcmp($hostname, "tirth@it490frontendqa")){
+                shell_exec("rsync -e 'ssh -i ~/.ssh/deploymentkey' $path$file $hostname:$landing"); 
+	 } else {
+         	shell_exec("rsync $path$file $hostname:$landing");
+	 }
+	 return true;
 true;
 }
 
-function doFallback($target){
+function doFallback($target, $badpath){
   $mydb = new mysqli('127.0.0.1','testuser','testpassword','deployment');
         if ($mydb->errno != 0)
 {
@@ -65,18 +73,23 @@ function doFallback($target){
 	$query="SELECT path FROM deployment WHERE currentprod=true AND target='$target'";
 	$result=$mydb->query($query);
 	$row=mysqli_fetch_assoc($result);
-	$filepath=$row('path');
-	$badq="UPDATE deployment SET bad=true WHERE path='$path'";
+	$filepath=$row['path'];
+	$badq="UPDATE deployment SET bad=true WHERE path='$badpath'";
 	$mydb->query($badq);
 	 $hostquery="SELECT hostname FROM HOSTS WHERE service='$target' AND environment= 'QA'";
         $response=$mydb->query($hostquery);
         $row=mysqli_fetch_assoc($response);
-        $hostname=$row('hostname');
+	$hostname=$row['hostname'];
+	echo "Here is the host $hostname \n";
         $landingq="SELECT landing from HOSTS where hostname='$hostname'";
         $landingres=$mydb->query($landingq);
         $row=mysqli_fetch_assoc($landingres);
-        $landing=$row('landing');
-   	shell_exec("rsync $path $hostname:$landing");
+	$landing=$row['landing'];
+	 if(strcmp($hostname, "tirth@it490frontendprod") || strcmp($hostname, "tirth@it490frontendqa")){
+                shell_exec("rsync -e 'ssh -i ~/.ssh/deploymentkey' $filepath $hostname:$landing");
+	 }else {
+		 shell_exec("rsync $filepath $hostname:$landing"); 
+	 }
         return true;
 
 }
@@ -96,14 +109,14 @@ function requestProcessor($request)
   switch ($request['type'])
   {
 	  case "updateProd":
-		  $returnstatus=doUpdateProd($request['path'], $request['target']);
+		  $returnstatus=doUpdateProd($request['path'], $request['target'], $request['file']);
 		  break;
 	  case "updateQA":
 		 $returnstatus=true;
-		$returnstatus=doUpdateQA($request['path'], $request['target']);
+		$returnstatus=doUpdateQA($request['path'], $request['target'], $request['file']);
 		break;
 	case "fallback":
-		$returnstatus=doFallback($request['target']);
+		$returnstatus=doFallback($request['target'], $request['file']);
 		break;
 
   }
