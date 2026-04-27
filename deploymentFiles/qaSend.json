@@ -1,7 +1,7 @@
 {
-	"type": "updateQA",
+	"type": "fallback",
 	"path": "/home/phoenix/packages/",
-	"target": "dmz",
-	"file": "test_target",
+	"target": "frontend",
+	"file": "test_prod_target",
 	"url": "phoenix@phoenix-0"	
 }

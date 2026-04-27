@@ -22,5 +22,5 @@ else
 {
 	echo "fuh nah";
 }
-var_dump($message);
+var_dump($response);
 ?>
