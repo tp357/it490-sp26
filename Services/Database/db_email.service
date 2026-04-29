@@ -1,0 +1,10 @@
+[Unit]
+Description="server for email related stuff"
+After=mysql.service
+
+[Service]
+ExecStart=/home/it490/Database/it490-sp26/sqlwork/emailServer.php
+Restart=always
+
+[Install]
+WantedBy=multi-user.service
