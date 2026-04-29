@@ -7,4 +7,4 @@ ExecStart=/home/it490/Database/it490-sp26/sqlwork/emailServer.php
 Restart=always
 
 [Install]
-WantedBy=multi-user.service
+WantedBy=multi-user.target
