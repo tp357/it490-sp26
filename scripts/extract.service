@@ -1,0 +1,10 @@
+[Unit]
+Description= Extract Service
+
+[Service]
+Type=simple
+ExecStart=/home/USERNAME/git/it490-sp25/scripts
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
