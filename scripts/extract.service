@@ -3,7 +3,7 @@ Description= Extract Service
 
 [Service]
 Type=simple
-ExecStart=/home/USERNAME/git/it490-sp25/scripts/extractListener.php
+ExecStart=/home/USERNAME/git/it490-sp25/scripts/qatListener.php
 Restart=always
 RestartSec=1
 
