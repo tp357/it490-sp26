@@ -28,11 +28,11 @@ function doUpdateProd($path, $target, $file){
 		shell_exec("rsync  -e 'ssh -i ~/.ssh/deploymentkey' $path$file $hostname:$landing");
 		 if(strcmp($target, "qa"){
 			 $qaclient= new rabbitMQClient('qa.ini', 'DeployServer');
-			 $request= array('target'=$target);
+			 $request= array('target'=$target, 'file'=$path$file);
 			 $qaclient->sendrequest($request);
                  } elseif(strcmp($target, "prod") {
 			 $prodclient= new rabbitMQClient('prod.ini', 'DeployServer');
-                         $request= array('target'=$target);
+                         $request= array('target'=$target,  'file'=$path$file);
                          $prodclient->sendrequest($request);
                  }
 
@@ -44,7 +44,7 @@ function doUpdateProd($path, $target, $file){
                          $qaclient->sendrequest($request);
                  } elseif(strcmp($target, "prod") {
                           $prodclient= new rabbitMQClient('prod.ini', 'DeployServer');
-                         $request= array('target'=$target);
+                         $request= array('target'=$target, 'file'=$path$file);
                          $prodclient->sendrequest($request);
 
                  }
@@ -79,11 +79,11 @@ function doUpdateQA($path, $target, $file){
                 shell_exec("rsync -e 'ssh -i ~/.ssh/deploymentkey' $path$file $hostname:$landing"); 
 		 if(strcmp($target, "qa"){
                          $qaclient= new rabbitMQClient('qa.ini', 'DeployServer');
-                         $request= array('target'=$target);
+                         $request= array('target'=$target,  'file'=$path$file);
                          $qaclient->sendrequest($request);
                  } elseif(strcmp($target, "prod") {
                           $prodclient= new rabbitMQClient('prod.ini', 'DeployServer');
-                         $request= array('target'=$target);
+                         $request= array('target'=$target,  'file'=$path$file);
                          $prodclient->sendrequest($request);
 
                  }
@@ -92,12 +92,12 @@ function doUpdateQA($path, $target, $file){
          	shell_exec("rsync $path$file $hostname:$landing");
 		 if(strcmp($target, "qa"){
                          $qaclient= new rabbitMQClient('qa.ini', 'DeployServer');
-                         $request= array('target'=$target);
+                         $request= array('target'=$target,  'file'=$path$file);
                          $qaclient->sendrequest($request);
 
                  } elseif(strcmp($target, "prod") {
                           $prodclient= new rabbitMQClient('prod.ini', 'DeployServer');
-                         $request= array('target'=$target);
+                         $request= array('target'=$target,  'file'=$path$file);
                          $prodclient->sendrequest($request);
 
                  }
@@ -132,12 +132,12 @@ function doFallback($target, $badpath){
 		 shell_exec("rsync -e 'ssh -i ~/.ssh/deploymentkey' $filepath $hostname:$landing");
 		 if(strcmp($target, "qa"){
 			 $qaclient= new rabbitMQClient('qa.ini', 'DeployServer');
-                         $request= array('target'=$target);
+                         $request= array('target'=$target,  'file'=$path$file);
                          $qaclient->sendrequest($request);
 
 		 } elseif(strcmp($target, "prod") {
 			  $prodclient= new rabbitMQClient('prod.ini', 'DeployServer');
-                         $request= array('target'=$target);
+                         $request= array('target'=$target,  'file'=$path$file);
                          $prodclient->sendrequest($request);
 
 		 }
