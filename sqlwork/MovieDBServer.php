@@ -32,7 +32,7 @@ function movieCheck($title){
         }
 	$checkquery="SELECT * FROM movies WHERE TITLE='$title'";
 	$response=$mydb->query($checkquery);
-	if($mysqli_num_rows($response)=0){
+	if($mysqli_num_rows($response)==0){
 		return true;
 	} else {
 		return false;
@@ -123,14 +123,14 @@ function requestProcessor($request)
 			echo "hi this is debugging get :D";
 			break;
 		case "if_movie_exists";
-			$returnstatus=movieCheck($request['title'];	
-			$exists=$returnstatus
+			$returnstatus=movieCheck($request['title']);	
+			$exists=$returnstatus;
 			echo "hi this is debugging movie check\n";		
 			break;
 		 
 		 case "add_review":
 			$returnstatus=addReview($request['movie_id'], $request['rating'], $request['sessionid']);
-			echo "this is me debugging addmovie which adds a rating\n "
+			echo "this is me debugging addmovie which adds a rating\n ";
 		 case "get_one_movie":
 			 $movie=getMovie($request['movie_id']);
 			 if ($movie!=NULL){
@@ -153,9 +153,9 @@ function requestProcessor($request)
   if($returnstatus && $exists){
         $message = array("status" => 'success', 'message'=>"Server received request and processed", 'exists'=>"$exists");
   } elseif($ratings!=NULL) {
-        $message = array("status" => 'success', 'message'=>"Server received request and processed". 'ratings'=>"$ratings");
+        $message = array("status" => 'success', 'message'=>"Server received request and processed", 'ratings'=>"$ratings");
   } elseif ($movie!=NULL){
-	 $message = array("status" => 'success', 'message'=>"Server received request and processed". 'movie'=>"$movie");
+	 $message = array("status" => 'success', 'message'=>"Server received request and processed", 'movie'=>"$movie");
   }
   else {
 	$exists=false;
@@ -166,7 +166,7 @@ echo $message;
 }
 
 
-$server = new rabbitMQServer("Moviedb.ini","AuthServer");
+$server = new rabbitMQServer("Moviedb.ini","MovieDBServer");
 
 echo "MovieDBServer BEGIN".PHP_EOL;
 $server->process_requests('requestProcessor');
