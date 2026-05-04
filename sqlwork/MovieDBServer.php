@@ -166,7 +166,7 @@ echo $message;
 }
 
 
-$server = new rabbitMQServer("Moviedb.ini","AuthServer");
+$server = new rabbitMQServer("Moviedb.ini","MovieDBServer");
 
 echo "MovieDBServer BEGIN".PHP_EOL;
 $server->process_requests('requestProcessor');
