@@ -110,7 +110,10 @@
 							}
 							else if (button === "register")
 							{
+								localStorage.setItem("sessionID", response.sessionID);
+								localStorage.setItem("user_id", response.user_id);
 								alert("You are Registered");
+								window.location.replace("home.html");
 							}
 
 						}

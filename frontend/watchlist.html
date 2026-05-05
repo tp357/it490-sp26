@@ -13,6 +13,11 @@
 		}
 
         window.onload = function() {
+            var sessionID = localStorage.getItem("sessionID");
+            if (!sessionID) {
+                window.location.href = "login.html";
+                return;
+            }
             getWatchlist();
         }
 

@@ -6,6 +6,11 @@
     <title>Forum</title>
     <script>
         window.onload = function() {
+            var sessionID = localStorage.getItem("sessionID");
+            if (!sessionID) {
+                window.location.href = "login.html";
+                return;
+            }
             loadPosts();
         };
 
@@ -44,6 +49,10 @@
         function addPost() {
             var content = document.getElementById("replyText").value;
             var user_id = localStorage.getItem("user_id");
+            if (!user_id) {
+                alert("Error: user_id not found. Please log in again.");
+                return;
+            }
             
             var url = "../backend/addPost.php";
             var XMLHttpInstance = new XMLHttpRequest();

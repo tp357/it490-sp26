@@ -56,7 +56,7 @@
             var movie_id = getMovieID();
             document.getElementById("addToWatchlist").onclick = function() {
                 var user_id = localStorage.getItem("user_id");
-                var url = "/backend/addToWatchlist.php";
+                var url = "../backend/addToWatchlist.php";
                 var message = JSON.stringify({ "movie_id": movie_id, "user_id": user_id });
                 const XMLHttpInstance = new XMLHttpRequest();
                 XMLHttpInstance.open("POST", url, true);
@@ -78,7 +78,7 @@
 			var sessionID = localStorage.getItem('sessionID')
 			var message = '{"sessionID": "' + sessionID + '"}'
 			console.log(sessionID);
-			var url = "http://www.sample.com/backend/validate.php";
+			var url = "../backend/validate.php";
 			console.log(message)
 			const XMLHttpInstance = new XMLHttpRequest();
 			
@@ -115,20 +115,19 @@
 			XMLHttpInstance.send(message);
 		};
 
-		var sessionID = localStorage.getItem('sessionID')
+		var sessionID = localStorage.getItem('sessionID');
 		if (sessionID == null) {
 			window.location.replace("login.html");
 			console.log("null hit");
 		}
+
 		function logout() {
-			localStorage.clear()
-			requestValidation()
+			localStorage.clear();
+			window.location.href = "login.html";
 		}
-		requestValidation()
-		setInterval(requestValidation, 5000);
 
         function getReviews(movie_id) {
-            var url = "/backend/getReviews.php";
+            var url = "../backend/getReviews.php";
             var message = JSON.stringify({ "movie_id": movie_id });
             const XMLHttpInstance = new XMLHttpRequest();
             XMLHttpInstance.open("POST", url, true);
@@ -186,7 +185,7 @@
             }
             var sessionID = localStorage.getItem("sessionID");
             var movie_id = getMovieID();
-            var url = "/backend/updateReview.php";
+            var url = "../backend/updateReview.php";
             var message = JSON.stringify({
                 movie_id: movie_id,
                 sessionID: sessionID,
@@ -212,7 +211,7 @@
             if (!confirm("Delete your review?")) return;
             var sessionID = localStorage.getItem("sessionID");
             var movie_id = getMovieID();
-            var url = "/backend/deleteReview.php";
+            var url = "../backend/deleteReview.php";
             var message = JSON.stringify({
                 movie_id: movie_id,
                 sessionID: sessionID
@@ -241,7 +240,7 @@
                     var movie_id = getMovieID();
                     var rating = document.getElementById("rating").value;
                     var sessionID = localStorage.getItem("sessionID");
-                    var url = "/backend/addReview.php";
+                    var url = "../backend/addReview.php";
                     var message = JSON.stringify({
                         movie_id: movie_id,
                         rating: rating,

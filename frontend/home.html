@@ -24,18 +24,18 @@
 					{
 						const response = JSON.parse(XMLHttpInstance.responseText);
 
-						if (XMLHttpInstance.status === 200) 
+						if (XMLHttpInstance.status === 200)
 						{
 							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
-							alert("validation success:" + (response.message));
-							loadRecommendations();
+							document.getElementById("login").innerHTML = "Welcome!";
+							if (!window.recommendationsLoaded) {
+								loadRecommendations();
+								window.recommendationsLoaded = true;
+							}
 						} else 
 						{
-
-							window.location.replace("../index.html")
 							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
-							alert("validation failure:" + (response.message));
-							
+							window.location.replace("login.html");
 						}
 					}catch(err) 
 					{
@@ -48,17 +48,15 @@
 			XMLHttpInstance.send(message);
 		};
 
-		var sessionID = localStorage.getItem('sessionID')
+		var sessionID = localStorage.getItem('sessionID');
 		if (sessionID == null) {
-			window.location.replace("../index.html");
+			window.location.replace("login.html");
 			console.log("null hit");
+		} else {
+			requestValidation();
+			loadRecommendations();
+			setInterval(requestValidation, 60000);
 		}
-		function logout() {
-			localStorage.clear()
-			requestValidation()
-		}
-		requestValidation()
-		setInterval(requestValidation, 5000);
 
 		function findMovie() {
 			var movie_id = document.getElementById("searchInput").value;
@@ -112,7 +110,7 @@
 						const response = JSON.parse(XMLHttpInstance.responseText);
 						displayRecommendations(response.movies);
 					} else {
-						document.getElementById("recommendationList").innerHTML = "<li>No recommendations found</li>";
+						document.getElementById("recommendationList").innerHTML = "<li>No recommendations available</li>";
 					}
 				}
 			};
@@ -135,7 +133,7 @@
 		}
 
 		function logout() {
-			localStorage.removeItem("sessionID");
+			localStorage.clear();
 			window.location.href = "login.html";
 		}
 	</script>
