@@ -59,24 +59,27 @@
 		}
 
 		function findMovie() {
-			var movie_id = document.getElementById("searchInput").value;
-			if (!movie_id.trim()) {
+			var searchQuery = document.getElementById("searchInput").value;
+			if (!searchQuery.trim()) {
     			document.getElementById("movieList").innerHTML = "<p>You should actually search something.</p>";
     		return;
 			} // checks if there is actually a search query to not waste an api call
 
 			var url = "../backend/pullAPI.php";
-			var message = JSON.stringify({"query": movie_id});
+			var message = JSON.stringify({"query": searchQuery});
 			const XMLHttpInstance = new XMLHttpRequest();
       		XMLHttpInstance.open("POST", url, true);
       		XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
       		XMLHttpInstance.onreadystatechange = function() {
       			if (XMLHttpInstance.readyState === 4) {
         			if (XMLHttpInstance.status === 200) {
-          				alert("Movie found.");
-						const response = JSON.parse(XMLHttpInstance.responseText);
-						displayMovies(response.movies);
-          				// getReviews(movie_id);
+          				const response = JSON.parse(XMLHttpInstance.responseText);
+          				if (response.status === 'success') {
+          					alert("Movie found.");
+          					displayMovies(response.movies);
+          				} else {
+          					alert("Error: " + response.message);
+          				}
           				document.getElementById("searchForm").reset();
         			} else {
           				document.getElementById("movieList").innerHTML = "<p>No movie found :(</p>";

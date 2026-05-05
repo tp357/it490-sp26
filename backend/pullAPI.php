@@ -34,9 +34,11 @@ if ($data['Response'] !== 'True') {
     exit();
 }
 
-$request = array(
+$movieData = array(
     'type' => 'add_movie',
+    'id' => $data['imdbID'] ?? uniqid(),
     'title' => $data['Title'],
+    'year' => $data['Year'],
     'rating' => $data['Rated'],
     'released' => $data['Released'],
     'runtime' => $data['Runtime'],
@@ -50,10 +52,10 @@ $request = array(
     'poster' => $data['Poster']
 );
 
-$response = $client -> send_request($request);
+$response = $client -> send_request($movieData);
 if ($response['status'] === 'success') {
     http_response_code(200);
-    echo json_encode(array('status' => 'success', 'source' => 'api', 'movies' => array($response)));
+    echo json_encode(array('status' => 'success', 'source' => 'api', 'movies' => array($movieData)));
 } else {
     http_response_code(500);
     echo json_encode($response);
