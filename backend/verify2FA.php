@@ -13,21 +13,29 @@ if (!isset($input['username']) || !isset($input['code'])) {
     exit;
 }
 
-$client = new rabbitMQClient('config/servers.ini', 'AuthServer');
+$client = new rabbitMQClient('config/servers.ini', '2FAServer');
 
-$request = array('type' => 'verify_2fa', 'username' => $input['username'], 'code' => $input['code']);
+$verifyRequest = array('type' => 'verify_2fa', 'username' => $input['username'], 'code' => $input['code']);
+$verifyResponse = $client->send_request($verifyRequest);
 
-$response = $client->send_request($request);
+if ($verifyResponse['status'] !== 'success') {
+    http_response_code(401);
+    echo json_encode(['status' => 'error', 'message' => 'Invalid or expired code']);
+    exit;
+}
 
-if ($response['status'] === 'success') {
+$loginRequest = array('type' => 'login_after_2fa', 'username' => $input['username']);
+$loginResponse = $client->send_request($loginRequest);
+
+if ($loginResponse['status'] === 'success') {
     http_response_code(200);
     echo json_encode([
         'status' => 'success',
-        'sessionID' => $response['sessionID'],
-        'user_id' => $response['user_id']
+        'sessionID' => $loginResponse['sessionID'],
+        'user_id' => $loginResponse['user_id']
     ]);
 } else {
-    http_response_code(401);
-    echo json_encode(['status' => 'error', 'message' => 'Invalid code']);
+    http_response_code(500);
+    echo json_encode(['status' => 'error', 'message' => 'Login failed after 2FA']);
 }
 ?>

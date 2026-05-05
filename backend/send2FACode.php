@@ -13,20 +13,32 @@ if (!isset($input['username'])) {
     exit;
 }
 
+$client = new rabbitMQClient('config/servers.ini', '2FAServer');
+$request = array('type' => 'get_phone', 'username' => $input['username']);
+$response = $client->send_request($request);
+
+if ($response['status'] !== 'success') {
+    http_response_code(400);
+    echo json_encode(['status' => 'error', 'message' => 'User not found']);
+    exit;
+}
+
+$phone = $response['phone'];
+
 // generates a code
 $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
 
-$client = new rabbitMQClient('config/servers.ini', 'AuthServer');
+// temp add twilio logic
 
-$request = array('type' => 'send_2fa', 'username' => $input['username'], 'code' => $code);
+$storeRequest = array('type' => 'store_2fa_code', 'username' => $input['username'], 'code' => $code);
 
-$response = $client->send_request($request);
+$storeResponse = $client->send_request($storeRequest);
 
-if ($response['status'] === 'success') {
+if ($storeResponse['status'] === 'success') {
     http_response_code(200);
-    echo json_encode(['status' => 'success', 'message' => 'Code sent!]);
+    echo json_encode(['status' => 'success', 'message' => 'Code sent!']);
 } else {
     http_response_code(500);
-    echo json_encode(['status' => 'error', 'message' => 'Failed to send']);
+    echo json_encode(['status' => 'error', 'message' => 'Failed to store code']);
 }
 ?>
