@@ -49,7 +49,7 @@
 			window.location.replace("login.html");
 			console.log("null hit");
 		} else {
-			requestValidation();
+			document.getElementById("login").innerHTML = "Welcome!";
 			loadRecommendations();
 		}
 
@@ -80,8 +80,8 @@
           				document.getElementById("movieList").innerHTML = "<p>No movie found :(</p>";
         			}
       			}
-    		}
-    	XMLHttpInstance.send(message);
+    		};
+    		XMLHttpInstance.send(message);
  		}
 
 		function displayMovies(movies) {
@@ -153,9 +153,9 @@
 	<h1>Movies</h1>
 	
 	<div id="search">
-		<form id="searchForm">
+		<form id="searchForm" onsubmit="event.preventDefault(); findMovie();">
 		<input type="text" id="searchInput" placeholder="Search Here.">
-		<button id="searchButton" onclick="findMovie()">Search</button>
+		<button type="submit">Search</button>
 		</form>
 	</div>
 
