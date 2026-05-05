@@ -28,14 +28,10 @@
 						{
 							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
 							document.getElementById("login").innerHTML = "Welcome!";
-							if (!window.recommendationsLoaded) {
-								loadRecommendations();
-								window.recommendationsLoaded = true;
-							}
 						} else 
 						{
 							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
-							window.location.replace("login.html");
+							document.getElementById("login").innerHTML = "Session expired. Please login again.";
 						}
 					}catch(err) 
 					{
@@ -55,7 +51,6 @@
 		} else {
 			requestValidation();
 			loadRecommendations();
-			setInterval(requestValidation, 60000);
 		}
 
 		function findMovie() {

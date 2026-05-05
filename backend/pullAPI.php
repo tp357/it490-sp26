@@ -17,7 +17,7 @@ if (!isset($input['query'])) {
 $title = $input['query'];
 $checkRequest = array('type' => 'if_movie_exists', 'title' => $title);
 $checkResponse = $client -> send_request($checkRequest);
-if ($checkResponse['exists']) {
+if ($checkResponse && $checkResponse['exists']) {
     $getRequest = array('type' => 'get_movie_by_title', 'title' => $title);
     $response = $client -> send_request($getRequest);
     http_response_code(200);
@@ -53,11 +53,11 @@ $movieData = array(
 );
 
 $response = $client -> send_request($movieData);
-if ($response['status'] === 'success') {
+if ($response && $response['status'] === 'success') {
     http_response_code(200);
     echo json_encode(array('status' => 'success', 'source' => 'api', 'movies' => array($movieData)));
 } else {
     http_response_code(500);
-    echo json_encode($response);
+    echo json_encode(array('status' => 'error', 'message' => 'Failed to save movie to database'));
 }
 ?>
