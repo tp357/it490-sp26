@@ -5,14 +5,14 @@ require_once('lib/rabbitMQLib.inc');
 header('Content-Type: application/json');
 
 $api_key="b28607cf";
-
-$client = new rabbitMQClient('config/servers.ini', 'MovieDBServer');
 $input = json_decode(file_get_contents('php://input'), true);
 
 if (!isset($input['query'])) {
     http_response_code(400);
+    echo json_encode(array('status' => 'error', 'message' => 'incomplete query'));
     exit();
 }
+$client = new rabbitMQClient('config/servers.ini', 'MovieDBServer');
 
 $title = $input['query'];
 $checkRequest = array('type' => 'if_movie_exists', 'title' => $title);

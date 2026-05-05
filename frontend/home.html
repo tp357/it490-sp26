@@ -44,6 +44,8 @@
 			XMLHttpInstance.send(message);
 		};
 
+		window.onload = function() {
+			requestValidation();
 		var sessionID = localStorage.getItem('sessionID');
 		if (sessionID == null) {
 			window.location.replace("login.html");
@@ -52,6 +54,7 @@
 			document.getElementById("login").innerHTML = "Welcome!";
 			loadRecommendations();
 		}
+		};
 
 		function findMovie() {
 			var searchQuery = document.getElementById("searchInput").value;
