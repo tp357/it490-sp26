@@ -52,6 +52,10 @@
 				window.location.replace("login.html");
 				return;
 			}
+			document.getElementById("searchForm").addEventListener("submit", function(e) {
+				e.preventDefault();
+				findMovie();
+			});
 			requestValidation();
 			loadRecommendations();
 			setInterval(requestValidation, 60000);
@@ -163,7 +167,7 @@
 	<h1>Movies</h1>
 	
 	<div id="search">
-		<form id="searchForm" onsubmit="event.preventDefault(); findMovie(); return false;">
+		<form id="searchForm" action="javascript:void(0);">
 		<input type="text" id="searchInput" placeholder="Search Here.">
 		<button type="button" onclick="findMovie()">Search</button>
 		</form>
