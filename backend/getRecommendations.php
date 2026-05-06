@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$client = new rabbitMQClient('config/servers.ini', 'MovieDBServer');
+$client = new rabbitMQClient('../config/servers.ini', 'MovieDBServer');
 
 $request = array('type' => 'get_recommendations', 'sessionID' => $input['sessionID']);
 

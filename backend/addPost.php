@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$client = new rabbitMQClient('config/servers.ini', 'AuthServer');
+$client = new rabbitMQClient('../config/servers.ini', 'AuthServer');
 
 $request = array('type' => 'add_post',
 'user_id' => $input['user_id'], 'content' => $input['content']);

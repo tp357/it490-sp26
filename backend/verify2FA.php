@@ -13,7 +13,7 @@ if (!isset($input['username']) || !isset($input['code'])) {
     exit;
 }
 
-$client = new rabbitMQClient('config/servers.ini', '2FAServer');
+$client = new rabbitMQClient('../config/servers.ini', '2FAServer');
 
 $verifyRequest = array('type' => 'verify_2fa', 'username' => $input['username'], 'code' => $input['code']);
 $verifyResponse = $client->send_request($verifyRequest);

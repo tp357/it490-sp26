@@ -12,7 +12,7 @@ if (!isset($input['query'])) {
     echo json_encode(array('status' => 'error', 'message' => 'incomplete query'));
     exit();
 }
-$client = new rabbitMQClient('config/servers.ini', 'MovieDBServer');
+$client = new rabbitMQClient('../config/servers.ini', 'MovieDBServer');
 
 $title = $input['query'];
 $checkRequest = array('type' => 'if_movie_exists', 'title' => $title);
@@ -26,9 +26,10 @@ if ($checkResponse && $checkResponse['exists']) {
 }
 
 $url = "http://www.omdbapi.com/?t=" . urlencode($title) . "&apikey=" . $api_key;
-$apiResponse = file_get_contents($url);
+$context = stream_context_create(array('http' => array('timeout' => 5)));
+$apiResponse = @file_get_contents($url, false, $context);
 $data = json_decode($apiResponse, true);
-if ($data['Response'] !== 'True') {
+if (!$data || $data['Response'] !== 'True') {
     http_response_code(404);
     echo json_encode(array('status' => 'error', 'message' => 'Movie not found'));
     exit();
@@ -36,7 +37,7 @@ if ($data['Response'] !== 'True') {
 
 $movieData = array(
     'type' => 'add_movie',
-    'id' => $data['imdbID'] ?? uniqid(),
+    'id' => $data['imdbID'],
     'title' => $data['Title'],
     'year' => $data['Year'],
     'rating' => $data['Rated'],

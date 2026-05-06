@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$client = new rabbitMQClient('config/servers.ini', 'ReviewServer');
+$client = new rabbitMQClient('../config/servers.ini', 'ReviewServer');
 
 $request = array('type' => 'get_reviews', 'movie_id' => $input['movie_id']);
 

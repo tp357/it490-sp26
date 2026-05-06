@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$client = new rabbitMQClient('config/servers.ini', 'EmailServer');
+$client = new rabbitMQClient('../config/servers.ini', 'EmailServer');
 
 $request = array('type' => 'set_notifications', 'sessionID' => $input['sessionID'], 
 'phone' => $input['phone']);

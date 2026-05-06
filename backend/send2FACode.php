@@ -13,7 +13,7 @@ if (!isset($input['username'])) {
     exit;
 }
 
-$client = new rabbitMQClient('config/servers.ini', '2FAServer');
+$client = new rabbitMQClient('../config/servers.ini', '2FAServer');
 $request = array('type' => 'get_phone', 'username' => $input['username']);
 $response = $client->send_request($request);
 

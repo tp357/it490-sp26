@@ -36,8 +36,7 @@
 					}catch(err) 
 					{
 						console.error(XMLHttpInstance.responseText);
-						alert("Server Response Invalid");
-						window.location.href = "login.html";
+						document.getElementById("login").innerHTML = "Server error";
 					}
 				}
 			};
@@ -45,15 +44,14 @@
 		};
 
 		window.onload = function() {
+			var sessionID = localStorage.getItem('sessionID');
+			if (sessionID == null) {
+				window.location.replace("login.html");
+				return;
+			}
 			requestValidation();
-		var sessionID = localStorage.getItem('sessionID');
-		if (sessionID == null) {
-			window.location.replace("login.html");
-			console.log("null hit");
-		} else {
-			document.getElementById("login").innerHTML = "Welcome!";
 			loadRecommendations();
-		}
+			setInterval(requestValidation, 60000);
 		};
 
 		function findMovie() {
@@ -73,10 +71,9 @@
         			if (XMLHttpInstance.status === 200) {
           				const response = JSON.parse(XMLHttpInstance.responseText);
           				if (response.status === 'success') {
-          					alert("Movie found.");
           					displayMovies(response.movies);
           				} else {
-          					alert("Error: " + response.message);
+          					document.getElementById("movieList").innerHTML = "<p>" + response.message + "</p>";
           				}
           				document.getElementById("searchForm").reset();
         			} else {
@@ -99,6 +96,11 @@
 		}
 
 		function loadRecommendations(){
+			const cached = sessionStorage.getItem("recommendations");
+			if (cached) {
+				displayRecommendations(JSON.parse(cached));
+				return;
+			}
 			const sessionID = localStorage.getItem("sessionID");
 			const url = "../backend/getRecommendations.php";
 			const data = {sessionID: sessionID};
@@ -109,6 +111,7 @@
 				if (XMLHttpInstance.readyState === 4) {
 					if (XMLHttpInstance.status === 200) {
 						const response = JSON.parse(XMLHttpInstance.responseText);
+						sessionStorage.setItem("recommendations", JSON.stringify(response.movies));
 						displayRecommendations(response.movies);
 					} else {
 						document.getElementById("recommendationList").innerHTML = "<li>No recommendations available</li>";
@@ -135,6 +138,7 @@
 
 		function logout() {
 			localStorage.clear();
+			sessionStorage.clear();
 			window.location.href = "login.html";
 		}
 	</script>

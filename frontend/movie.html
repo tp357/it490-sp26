@@ -47,7 +47,7 @@
                 <h1>${movie.title}</h1>
                 <img src="${movie.poster}" alt="Movie Poster" style="max-width:200px;">
                 <p>Overview: ${movie.plot}</p>
-                <p>Release Date: ${movie.releaseDate} | ${movie.Year}</p>
+                <p>Year: ${movie.year}</p>
                 <p>Rating: ${movie.rating}</p>
                 <p>Genre: ${movie.genre}</p>
                 <p>Director: ${movie.director}</p>
@@ -74,51 +74,9 @@
             };
         }
 
-        function requestValidation(){
-			var sessionID = localStorage.getItem('sessionID')
-			var message = '{"sessionID": "' + sessionID + '"}'
-			console.log(sessionID);
-			var url = "../backend/validate.php";
-			console.log(message)
-			const XMLHttpInstance = new XMLHttpRequest();
-			
-			XMLHttpInstance.open("POST", url, true);
-			XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
-			XMLHttpInstance.onreadystatechange = function() 
-			{
-				if(XMLHttpInstance.readyState === 4) 
-				{
-					try 
-					{
-						const response = JSON.parse(XMLHttpInstance.responseText);
-
-						if (XMLHttpInstance.status === 200) 
-						{
-							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
-							alert("validation success:" + (response.message));
-						} else 
-						{
-
-							window.location.replace("../index.html")
-							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
-							alert("validation failure:" + (response.message));
-							
-						}
-					}catch(err) 
-					{
-						console.error(XMLHttpInstance.responseText);
-						alert("Server Response Invalid");
-						window.location.href = "login.html";
-					}
-				}
-			};
-			XMLHttpInstance.send(message);
-		};
-
-		var sessionID = localStorage.getItem('sessionID');
+        var sessionID = localStorage.getItem('sessionID');
 		if (sessionID == null) {
 			window.location.replace("login.html");
-			console.log("null hit");
 		}
 
 		function logout() {
@@ -251,20 +209,19 @@
                     XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
                     XMLHttpInstance.onreadystatechange = function() {
                         if (XMLHttpInstance.readyState === 4) {
-                                if (XMLHttpInstance.status === 200) {
-                                    alert("Review posted.");
-                                    getReviews(movie_id);
-                                    form.reset();
-                                } else {
-                                    alert("There was an issue posting the review.");
-                                }
+                            if (XMLHttpInstance.status === 200) {
+                                alert("Review posted.");
+                                getReviews(movie_id);
+                                form.reset();
+                            } else {
+                                alert("There was an issue posting the review.");
                             }
                         }
                     };
                     XMLHttpInstance.send(message);
-                }
+                };
             }
-        );
+        });
     </script>
     </head>
 

@@ -57,7 +57,7 @@
             watchlistDiv.innerHTML = html;
         }
 
-        function removeFromWatchlist(movieTitle){
+        function removeFromWatchlist(movieID){
             const userID = localStorage.getItem("user_id");
             const url ="../backend/remFromWatchlist.php";
             const data = {user_id: userID, movie_id: movieID};
