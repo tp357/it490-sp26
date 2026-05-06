@@ -1,0 +1,11 @@
+[Unit]
+Description= Extract Service
+
+[Service]
+Type=simple
+ExecStart=/home/USERNAME/git/it490-sp25/scripts/qatListener.php
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target
