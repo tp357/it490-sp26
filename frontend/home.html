@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+		
+<head>
+	<meta name="viewport" content="width=device-width, inital-scale=1.0">
+	<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Expires" content="0">
+	<link rel = "stylesheet" href="frontendcss.css">
+	<script>
+		function requestValidation()
+		{
+			var sessionID = localStorage.getItem('sessionID')
+			var message = '{"sessionID": "' + sessionID + '"}'
+			console.log(sessionID);
+			var url = "../backend/validate.php";
+			console.log(message)
+			const XMLHttpInstance = new XMLHttpRequest();
+			
+			XMLHttpInstance.open("POST", url, true);
+			XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+			XMLHttpInstance.onreadystatechange = function() 
+			{
+				if(XMLHttpInstance.readyState === 4) 
+				{
+					try 
+					{
+						const response = JSON.parse(XMLHttpInstance.responseText);
+
+						if (XMLHttpInstance.status === 200)
+						{
+							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
+							document.getElementById("login").innerHTML = "Welcome!";
+						} else 
+						{
+							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
+							document.getElementById("login").innerHTML = "Session expired. Please login again.";
+						}
+					}catch(err) 
+					{
+						console.error(XMLHttpInstance.responseText);
+						document.getElementById("login").innerHTML = "Server error";
+					}
+				}
+			};
+			XMLHttpInstance.send(message);
+		};
+
+		window.onload = function() {
+			var sessionID = localStorage.getItem('sessionID');
+			if (sessionID == null) {
+				window.location.replace("login.html");
+				return;
+			}
+			document.getElementById("searchForm").addEventListener("submit", function(e) {
+				e.preventDefault();
+				findMovie();
+			});
+			requestValidation();
+			// loadRecommendations(); // temporarily disabled
+			setInterval(requestValidation, 60000);
+		};
+
+		function findMovie() {
+			var searchQuery = document.getElementById("searchInput").value;
+			if (!searchQuery.trim()) {
+    			document.getElementById("movieList").innerHTML = "<p>You should actually search something.</p>";
+    		return;
+			} // checks if there is actually a search query to not waste an api call
+
+			var url = "../backend/pullAPI.php";
+			var message = JSON.stringify({"query": searchQuery});
+			const XMLHttpInstance = new XMLHttpRequest();
+      		XMLHttpInstance.open("POST", url, true);
+      		XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+      		XMLHttpInstance.onreadystatechange = function() {
+      			if (XMLHttpInstance.readyState === 4) {
+        			if (XMLHttpInstance.status === 200) {
+          				const response = JSON.parse(XMLHttpInstance.responseText);
+          				if (response.status === 'success') {
+          					displayMovies(response.movies);
+          				} else {
+          					document.getElementById("movieList").innerHTML = "<p>" + response.message + "</p>";
+          				}
+          				document.getElementById("searchForm").reset();
+        			} else {
+          				document.getElementById("movieList").innerHTML = "<p>No movie found :(</p>";
+        			}
+      			}
+    		};
+    		XMLHttpInstance.send(message);
+ 		}
+
+		function displayMovies(movies) {
+			var movieList = document.getElementById("movieList");
+			movieList.innerHTML = '<h2> Results: </h2>';
+			movies.forEach(function(movie) {
+				var listItem = document.createElement("li");
+				listItem.innerHTML = '<a href="movie.html?movie_id='
+				+ movie.id + '">' + movie.title + ' ('+ movie.year +')</a>';
+				movieList.appendChild(listItem);
+			});
+		}
+
+		function loadRecommendations(){
+			const cached = sessionStorage.getItem("recommendations");
+			if (cached) {
+				displayRecommendations(JSON.parse(cached));
+				return;
+			}
+			const sessionID = localStorage.getItem("sessionID");
+			const url = "../backend/getRecommendations.php";
+			const data = {sessionID: sessionID};
+			const XMLHttpInstance = new XMLHttpRequest();
+			XMLHttpInstance.open("POST", url, true);
+			XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+			XMLHttpInstance.onreadystatechange = function() {
+				if (XMLHttpInstance.readyState === 4) {
+					if (XMLHttpInstance.status === 200) {
+						const response = JSON.parse(XMLHttpInstance.responseText);
+						sessionStorage.setItem("recommendations", JSON.stringify(response.movies));
+						displayRecommendations(response.movies);
+					} else {
+						document.getElementById("recommendationList").innerHTML = "<li>No recommendations available</li>";
+					}
+				}
+			};
+			XMLHttpInstance.send(JSON.stringify(data));
+		}
+
+		function displayRecommendations(movies){
+			var recs = document.getElementById("recommendationList");
+			recs.innerHTML = "";
+			if (!movies || movies.length === 0){
+				recs.innerHTML = "<li>update your watchlist to get recommendations</li>";
+				return;
+			}
+			movies.forEach(function(movie){
+				var listItem  = document.createElement("li");
+				listItem.innerHTML = '<a href="movie.html?movie_id='
+				+ movie.id + '">' + movie.title + ' ('+ movie.year +')</a>';
+				recs.appendChild(listItem);
+			});
+		}
+
+		function logout() {
+			localStorage.clear();
+			sessionStorage.clear();
+			window.location.href = "login.html";
+		}
+	</script>
+
+	<title>Home Page</title>
+</head>
+<body> 
+	<h1>Welcome!</h1>
+	<p id="login">Logging in...</p>
+
+	<nav>
+		<a href="home.html">Home</a>
+		<a href="watchlist.html">Watchlist</a> 
+		<a href="forum.html">Forum</a>
+		<a href="notifications.html">Notifications</a>
+		<button id="logout" onclick="logout()">Logout</button>
+	</nav>
+
+	<h1>Movies</h1>
+	
+	<div id="search">
+		<form id="searchForm" action="javascript:void(0);">
+		<input type="text" id="searchInput" placeholder="Search Here.">
+		<button type="submit">Search</button>
+		</form>
+	</div>
+
+	<div id="Recommendations">
+		<h2>Recommended for You</h2>
+		<ul id="recommendationList">
+			<li>loading recommendations</li>
+		</ul>
+	</div>
+
+	<div id="movieList">
+		<h2>All Movies</h2>
+		<!--<ul id="allMovies">
+			<li>Movie 1</li>
+			<li>Movie 2</li>
+			<li>Movie 3</li>
+		</ul>-->
+	</div>
+</body>
+
+</html>

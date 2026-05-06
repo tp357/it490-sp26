@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, inital-scale=1.0">
+	<link rel = "stylesheet" href="frontendcss.css">
+    <title>Forum</title>
+    <script>
+        window.onload = function() {
+            var sessionID = localStorage.getItem("sessionID");
+            if (!sessionID) {
+                window.location.href = "login.html";
+                return;
+            }
+            loadPosts();
+        };
+
+        function loadPosts() {
+            var url = "../backend/getForum.php";
+            var XMLHttpInstance = new XMLHttpRequest();
+            XMLHttpInstance.open("POST", url, true);
+            XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+            XMLHttpInstance.onreadystatechange = function() {
+                if (XMLHttpInstance.readyState === 4 && XMLHttpInstance.status === 200) {
+                    var response = JSON.parse(XMLHttpInstance.responseText);
+                    showPosts(response.posts || []);
+                }
+            };
+            XMLHttpInstance.send();
+        }
+
+        function showPosts(posts) {
+            var list = document.getElementById("postList");
+            list.innerHTML = "";
+            if (posts.length === 0) {
+                list.innerHTML = "<p>No posts yet.</p>";
+                return;
+            }
+            posts.forEach(function(p) {
+                var div = document.createElement("div");
+                var deleteButton = "";
+                if (p.user_id == localStorage.getItem("user_id")) {
+                    deleteButton = ' <button onclick="deletePost(' + p.id + ')">Delete</button>';
+                }
+                div.innerHTML = "<p><b>" + p.username + ":</b> " + p.content + deleteButton + "</p>";
+                list.appendChild(div);
+            });
+        }
+
+        function addPost() {
+            var content = document.getElementById("replyText").value;
+            var user_id = localStorage.getItem("user_id");
+            if (!user_id) {
+                alert("Error: user_id not found. Please log in again.");
+                return;
+            }
+            
+            var url = "../backend/addPost.php";
+            var XMLHttpInstance = new XMLHttpRequest();
+            XMLHttpInstance.open("POST", url, true);
+            XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+            XMLHttpInstance.onreadystatechange = function() {
+                if (XMLHttpInstance.readyState === 4 && XMLHttpInstance.status === 200) {
+                    document.getElementById("replyText").value = "";
+                    loadPosts();
+                } else if (XMLHttpInstance.readyState === 4) {
+                    alert("Failed to create post.");
+                }
+            };
+            XMLHttpInstance.send(JSON.stringify({content: content, user_id: user_id}));
+        }
+
+        function deletePost(postId) {
+            if (!confirm("Delete your post?")) return;
+            var user_id = localStorage.getItem("user_id");
+            
+            var url = "../backend/deletePost.php";
+            var XMLHttpInstance = new XMLHttpRequest();
+            XMLHttpInstance.open("POST", url, true);
+            XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+            XMLHttpInstance.onreadystatechange = function() {
+                if (XMLHttpInstance.readyState === 4 && XMLHttpInstance.status === 200) {
+                    loadPosts();
+                } else if (XMLHttpInstance.readyState === 4) {
+                    alert("Failed to remove post.");
+                }
+            };
+            XMLHttpInstance.send(JSON.stringify({post_id: postId, user_id: user_id}));
+        }
+
+        function logout() {
+            localStorage.removeItem("sessionID");
+            window.location.href = "login.html";
+        }
+    </script>
+</head>
+<body>
+        
+    <nav>
+        <a href="home.html">Home</a>
+        <a href="watchlist.html">Watchlist</a> 
+        <a href="forum.html">Forum</a>
+        <a href="notifications.html">Notifications</a>
+		<button id="logout" onclick="logout()">Logout</button>
+    </nav>
+
+    <h1>Discussion Forum</h1>
+    <div id="postList"></div>
+    
+    <h3>Post a Reply</h3>
+    <textarea id="replyText" required></textarea><br>
+    <button onclick="addPost()">Post Reply</button>
+</body>
+</html>

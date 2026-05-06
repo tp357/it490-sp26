@@ -7,10 +7,11 @@ header('Content-Type: application/json');
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$client = new rabbitMQClient('config/servers.ini', 'AuthServer');
+$client = new rabbitMQClient('../config/servers.ini', 'AuthServer');
 
-$request = array('type' => 'registration', 'username' => $input['username'], 'password' => $input['password']
-);
+// $hashedPassword = password_hash($input['password'], PASSWORD_BCRYPT);
+
+$request = array('type' => 'registration', 'username' => $input['username'], 'password' => $input['password'], 'phone' => $input['phone']);
 
 $response = $client->send_request($request);
 

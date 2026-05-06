@@ -7,9 +7,10 @@ header('Content-Type: application/json');
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$client = new rabbitMQClient('../config/servers.ini', 'AuthServer');
+$client = new rabbitMQClient('../config/servers.ini', 'EmailServer');
 
-$request = array('type' => 'validate_session', 'sessionID' => $input['sessionID']);
+$request = array('type' => 'set_notifications', 'sessionID' => $input['sessionID'], 
+'phone' => $input['phone']);
 
 $response = $client->send_request($request);
 
@@ -17,7 +18,7 @@ if ($response['status'] === 'success') {
     http_response_code(200);
     echo json_encode($response);
 } else {
-    http_response_code(401);
+    http_response_code(400); // placeholder error code
     echo json_encode($response);
 }
 ?>

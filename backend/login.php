@@ -7,15 +7,14 @@ header('Content-Type: application/json');
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$client = new rabbitMQClient('config/servers.ini', 'AuthServer');
+$client = new rabbitMQClient('../config/servers.ini', 'AuthServer');
 
-$request = array('type' => 'login', 'username' => $input['username'], 'password' => $input['password']
-);
+$request = array('type' => 'login', 'username' => $input['username'], 'password' => $input['password']);
 
 $response = $client->send_request($request);
 
 if ($response['status'] === 'success') {
-    http_response_code(response_code: 200);
+    http_response_code(200);
     echo json_encode($response);
 } else {
     http_response_code(401);

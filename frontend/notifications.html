@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<meta name="viewport" content="width=device-width, inital-scale=1.0">
+	<link rel = "stylesheet" href="frontendcss.css">
+		<title>Register for Push Notifications</title>
+	</head>
+
+	<body>
+
+	<nav>
+		<a href="home.html">Home</a>
+		<a href="watchlist.html">Watchlist</a> 
+		<a href="forum.html">Forum</a>
+		<a href="notifications.html">Notifications</a>
+		<button id="logout" onclick="logout()">Logout</button>
+	</nav>
+
+		<h1>Register for Push Notifications</h1>
+		
+		<form id="pushform">
+			<label>phone</label>
+			<input type="tel" id="phone" required>
+			<button type="submit" id="formsubmit">Submit</button>
+		</form>
+		
+		<script>
+			window.onload = function() {
+				const sessionid = localStorage.getItem("sessionID");
+				const url = "../backend/getNotifPrefs.php";
+				const data = {sessionID: sessionid};
+				
+				const XMLHttpInstance = new XMLHttpRequest();
+				XMLHttpInstance.open("POST", url, true);
+				XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+				XMLHttpInstance.onreadystatechange = function() {
+					if (XMLHttpInstance.readyState === 4 && XMLHttpInstance.status === 200) {
+						const response = JSON.parse(XMLHttpInstance.responseText);
+						if (response.phone) {
+							document.getElementById("phone").value = response.phone;
+						}
+					}
+				};
+				XMLHttpInstance.send(JSON.stringify(data));
+			};
+
+			document.getElementById("pushform").addEventListener("submit", function(even) {
+				even.preventDefault();
+
+				const phone = document.getElementById("phone").value;
+				const sessionid = localStorage.getItem("sessionID");
+				const data = {phone: phone, sessionID: sessionid};
+				const jsonData = JSON.stringify(data);
+				console.log("Data being sent:", jsonData);
+				var url = "../backend/setNotifPrefs.php";
+				const XMLHttpInstance = new XMLHttpRequest();
+				XMLHttpInstance.open("POST", url, true);
+				XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+				XMLHttpInstance.onreadystatechange = function () {
+					if(XMLHttpInstance.readyState === 4) {
+						try {
+							if (XMLHttpInstance.status === 200) {
+								const response = JSON.parse(XMLHttpInstance.responseText);
+								console.log(response);
+								alert("Your Signed Up.");
+
+							}else {
+								console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
+								alert("Sign Up Failure: ");
+
+							}
+						} catch (err){
+							console.error("Server Response failure", err);
+							alert("Error occurred. Try again.");
+						}
+					
+					}
+				};
+				XMLHttpInstance.send(jsonData);
+			});
+			function logout() {
+				localStorage.removeItem("sessionID");
+				window.location.href = "login.html";
+			}
+		</script>
+	</body>
+</html>

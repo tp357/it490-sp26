@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, inital-scale=1.0">
+	<link rel = "stylesheet" href="frontendcss.css">
+	<title>Login Page</title>
+</head>
+<body>
+	<h1>Login</h1>
+
+	<form id="loginform">
+		<label>username</label>
+		<input type="text" id="username" required>
+
+		<label>password</label>
+		<input type="password" id="password" required>
+
+		<label>phone #</label>
+		<input type="tel" id="phone" required>
+
+		<div id="loginButtons">
+			<button type="submit" id="login">Login</button>
+			<button type="submit" id="register">Register</button>
+		</div>
+
+		<!-- 2FA disabled
+		<div id="codeSection">
+			<label>code from phone</label>
+			<input type="text" id="code" maxlength="6" placeholder="123456">
+			<button type="submit" id="verify2fa">Verify</button>
+			<button type="button" id="resend">Resend</button>
+		</div>
+		-->
+	</form>
+
+	
+	<script>
+		var currentUsername = "";
+		document.getElementById("loginform").addEventListener("submit", function(even) {
+			even.preventDefault();
+
+			var button = even.submitter.id;
+
+			const username = document.getElementById("username").value;
+			const password = document.getElementById("password").value;
+			const phone = document.getElementById("phone").value;
+			/* 2FA disabled
+			if (button === "verify2fa") {
+				const code = document.getElementById("code").value;
+				verify2FA(currentUsername, code);
+				return;
+			}
+			if (button === "resend") {
+				send2FACode(currentUsername);
+				return;
+			}
+			*/
+
+			var data = {username: username, password: password};
+			if (button === "register") {
+				data.phone = phone;
+			}
+			const jsonData = JSON.stringify(data);
+			console.log("Data being sent:", jsonData);
+			var url = "";
+
+			if (button === "login")
+			{
+				url = "../backend/login.php";
+				console.log("Sending login")
+			}
+			else if (button === "register")
+			{
+				url = "../backend/register.php";
+				console.log("Sending register")
+			}
+			else
+			{
+				console.log("Sending blank")
+			}
+
+			const XMLHttpInstance = new XMLHttpRequest();
+
+			XMLHttpInstance.open("POST", url, true);
+			XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+			XMLHttpInstance.onreadystatechange = function()
+			{
+				if(XMLHttpInstance.readyState === 4)
+				{
+					try
+					{
+						const response = JSON.parse(XMLHttpInstance.responseText);
+						console.log("Response: ", response)
+						if (XMLHttpInstance.status === 200)
+						{
+							console.log(response);
+							if (button === "login")
+							{
+								//if (response.twoFARequired) {
+								//	currentUsername = username;
+								//	document.getElementById("loginButtons").style.display = "none";
+								//	document.getElementById("codeSection").style.display = "block";
+								//	send2FACode(username);
+								//	alert("Enter the code sent to your phone");
+								//} else {
+									localStorage.setItem("sessionID", response.sessionID);
+									localStorage.setItem("user_id", response.user_id);
+									window.location.replace("home.html");
+								//}
+							}
+							else if (button === "register")
+							{
+								localStorage.setItem("sessionID", response.sessionID);
+								localStorage.setItem("user_id", response.user_id);
+								alert("You are Registered");
+								window.location.replace("home.html");
+							}
+
+						}
+						else
+						{
+							console.log(XMLHttpInstance.status, XMLHttpInstance.responseText);
+							alert("login failure:" + (response.message));
+						}
+					}
+					catch(err)
+					{
+						console.error(XMLHttpInstance.responseText);
+						alert("Server Response Invalid");
+					}
+				}
+			};
+			XMLHttpInstance.send(jsonData);
+		});
+
+		/* 2FA disabled
+		function send2FACode(username) {
+			const data = JSON.stringify({username: username});
+			const XMLHttpInstance = new XMLHttpRequest();
+			XMLHttpInstance.open("POST", "../backend/send2FACode.php", true);
+			XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+			XMLHttpInstance.onreadystatechange = function() {
+				if (XMLHttpInstance.readyState === 4 && XMLHttpInstance.status === 200) {
+					console.log("code sent");
+				}
+			};
+			XMLHttpInstance.send(data);
+		}
+
+		function verify2FA(username, code) {
+			const data = JSON.stringify({username: username, code: code});
+			const XMLHttpInstance = new XMLHttpRequest();
+			XMLHttpInstance.open("POST", "../backend/verify2FA.php", true);
+			XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
+			XMLHttpInstance.onreadystatechange = function() {
+				if (XMLHttpInstance.readyState === 4) {
+					try {
+						const response = JSON.parse(XMLHttpInstance.responseText);
+						if (XMLHttpInstance.status === 200) {
+							localStorage.setItem("sessionID", response.sessionID);
+							localStorage.setItem("user_id", response.user_id);
+							window.location.replace("home.html");
+						} else {
+							alert("Invalid code");
+						}
+					} catch(err) {
+						alert("Server error");
+					}
+				}
+			};
+			XMLHttpInstance.send(data);
+		}
+		*/
+	</script>
+</body>
+</html>
