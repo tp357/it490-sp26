@@ -3,6 +3,9 @@
 		
 <head>
 	<meta name="viewport" content="width=device-width, inital-scale=1.0">
+	<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Expires" content="0">
 	<link rel = "stylesheet" href="frontendcss.css">
 	<script>
 		function requestValidation()
@@ -160,9 +163,9 @@
 	<h1>Movies</h1>
 	
 	<div id="search">
-		<form id="searchForm" onsubmit="event.preventDefault(); findMovie();">
+		<form id="searchForm" onsubmit="event.preventDefault(); findMovie(); return false;">
 		<input type="text" id="searchInput" placeholder="Search Here.">
-		<button type="submit">Search</button>
+		<button type="button" onclick="findMovie()">Search</button>
 		</form>
 	</div>
 
