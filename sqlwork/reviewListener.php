@@ -21,10 +21,10 @@ function addReview($movie, $sessionid, $review, $reasoning){
 	$checkquery="SELECT * FROM REVIEWS WHERE MOVIE='$movie' AND USERNAME='$username'";
 	$checkresponse=$mydb->query($checkquery);
 	if(mysqli_num_rows($checkresult)!=0){
-		echo "query added\n"
+		echo "query added\n";
 		return true;
 	} else {
-		echo "failed to add query\n"
+		echo "failed to add query\n";
 		return false;
 	}
 
@@ -40,10 +40,10 @@ function getReview($movieid) {
 	$moviequery="SELECT * FROM reviews WHERE MOVIE='$movie'";
 	$movieresponse=$mydb->query($moviequery);
 	if(mysqli_num_rows($movieresponse)!=0){
-		echo "reviews gotten\n"
-		return $movieresponse;.
+		echo "reviews gotten\n";
+		return $movieresponse;
 	} else {
-		echo "No reviews for this movie\n"
+		echo "No reviews for this movie\n";
 		return null;
 	}
 }
@@ -77,7 +77,7 @@ function requestProcessor($request)
                         break;
         }
   if($returnstatus){
-        $message = array("status" => 'success','reviews'=>"$reviews" 'message'=>"Server received request and processed");
+        $message = array("status" => 'success','reviews'=>"$reviews", 'message'=>"Server received request and processed");
                                  } else {
         $message = array("status"=>"This shit ain't work");
   }
@@ -86,7 +86,7 @@ echo $message;
 }
 
 
-$server = new rabbitMQServer("testRabbitMQ.ini","AuthServer");
+$server = new rabbitMQServer("testRabbitMQ.ini","ReviewServer");
 
 echo "reviewListener BEGIN".PHP_EOL;
 $server->process_requests('requestProcessor');

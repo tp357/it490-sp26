@@ -67,7 +67,7 @@ function doValidate($sesID){
 		return NULL;
 	}
 }
-function doRegister($username, $password) {
+function doRegister($username, $password,$phone) {
  $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
         if ($mydb->errno != 0)
 {
@@ -81,7 +81,7 @@ function doRegister($username, $password) {
 		return false;
 	}
 	$timestamp= date('Y-m-d H:i:s');
-	$regq="INSERT into users VALUES ('$username','$timestamp','$password')";
+	$regq="INSERT into users VALUES ('$username','$timestamp','$password', '$phone')";
 	$mydb->query($regq);
 	echo "REGISTRATION WORKS YIPPEE";
 	return true;
@@ -117,7 +117,7 @@ function requestProcessor($request)
 	    break;
     case "registration":
 	    
-	    $returnstatus=doRegister($request['username'],$request['password']);
+	    $returnstatus=doRegister($request['username'],$request['password'], $request['phone']);
 	    break;
   }
   
