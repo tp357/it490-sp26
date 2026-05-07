@@ -1,4 +1,4 @@
-!#/usr/bin.php
+#!/usr/bin.php
 
 <?php
 
@@ -11,7 +11,7 @@
                 $returnstatus = false;
                 $message = array();
                 $sessionID=NULL;
-                $file=$request['file']
+                $file=$request['file'];
           echo "received request".PHP_EOL;
           var_dump($request);
           if(!isset($request['type']))
@@ -41,8 +41,8 @@
 
 
          }
-
-        $server = new rabbitMQServer("qa.ini","DeployServer");
+	}
+        $server = new rabbitMQServer("qa.ini","DeploymentServer");
         echo "DeploymentListener BEGIN".PHP_EOL;
         $server->process_requests('requestProcessor');
         echo "DeploymentListener".PHP_EOL;
