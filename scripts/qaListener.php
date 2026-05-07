@@ -41,7 +41,9 @@
                            break;
 
 
-         }
+	  }
+	  $message= array("status"=>"received");
+		  return $message;
 	}
         $server = new rabbitMQServer("qa.ini","DeploymentServer");
         echo "DeploymentListener BEGIN".PHP_EOL;

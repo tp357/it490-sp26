@@ -38,7 +38,9 @@
 			   shell_exec("tar -xf $file -C ~/git/it490-sp26");
 			   break;
 
- 	 }
+	  }
+	  $message= array("status"=>"received");
+	  return $message;
 	}
 	$server = new rabbitMQServer("prod.ini","DeployServer");
 	echo "DeploymentListener BEGIN".PHP_EOL;
