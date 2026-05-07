@@ -12,7 +12,7 @@ function doUpdateProd($path, $target, $file){
         echo "failed to connect to database: ". $mydb->error . PHP_EOL;
 	return false;
 }
-	$query= "UPDATE deployment SET currentprod=false WHERE currentprod=true AND target='$target'";
+	$query= "UPDATE deployment SET currentprod=false WHERE currentprod=true AND service='$target'";
 	$mydb->query($query);
 	$query="UPDATE deployment SET currentprod=true WHERE path='$path$file'";
 	$mydb->query($query);
@@ -20,14 +20,35 @@ function doUpdateProd($path, $target, $file){
 	$response=$mydb->query($hostquery);
 	$row=mysqli_fetch_assoc($response);
 	$hostname=$row['hostname'];
-	$landingq="SELECT landing from HOSTS where hostname='$hostname'";
+	$landingq="SELECT landing from HOSTS where hostname='$hostname' and target='$target'";
 	$landingres=$mydb->query($landingq);
 	$row=mysqli_fetch_assoc($landingres);
 	$landing=$row['landing'];
 	if(strcmp($hostname, "tirth@it490frontendprod") || strcmp($hostname, "tirth@it490frontendqa")){
 		shell_exec("rsync  -e 'ssh -i ~/.ssh/deploymentkey' $path$file $hostname:$landing");
+		 if(strcmp($target, "qa"){
+			 $qaclient= new rabbitMQClient('qa.ini', 'DeployServer');
+			 $request= array('target'=$target, 'file'=$path$file);
+			 $qaclient->sendrequest($request);
+                 } elseif(strcmp($target, "prod") {
+			 $prodclient= new rabbitMQClient('prod.ini', 'DeployServer');
+                         $request= array('target'=$target,  'file'=$path$file);
+                         $prodclient->sendrequest($request);
+                 }
+
 	} else {
-	 shell_exec("rsync $path $hostname:$landing");
+		 shell_exec("rsync $path $hostname:$landing");
+		 if(strcmp($target, "qa"){
+                         $qaclient= new rabbitMQClient('qa.ini', 'DeployServer');
+                         $request= array('target'=$target);
+                         $qaclient->sendrequest($request);
+                 } elseif(strcmp($target, "prod") {
+                          $prodclient= new rabbitMQClient('prod.ini', 'DeployServer');
+                         $request= array('target'=$target, 'file'=$path$file);
+                         $prodclient->sendrequest($request);
+
+                 }
+
 	}
 	return true;
 
@@ -48,7 +69,7 @@ function doUpdateQA($path, $target, $file){
         $row=mysqli_fetch_assoc($response);
 	$hostname=$row['hostname'];
 	echo "here is the host $hostname \n";
-        $landingq="SELECT landing from HOSTS where hostname='$hostname'";
+        $landingq="SELECT landing from HOSTS where hostname='$hostname' and target='$target'";
         $landingres=$mydb->query($landingq);
         $row=mysqli_fetch_assoc($landingres);
 	$landing=$row['landing'];
@@ -56,8 +77,30 @@ function doUpdateQA($path, $target, $file){
 	echo "here is the path $path$file \n";
 	 if(strcmp($hostname, "tirth@it490frontendprod") || strcmp($hostname, "tirth@it490frontendqa")){
                 shell_exec("rsync -e 'ssh -i ~/.ssh/deploymentkey' $path$file $hostname:$landing"); 
+		 if(strcmp($target, "qa"){
+                         $qaclient= new rabbitMQClient('qa.ini', 'DeployServer');
+                         $request= array('target'=$target,  'file'=$path$file);
+                         $qaclient->sendrequest($request);
+                 } elseif(strcmp($target, "prod") {
+                          $prodclient= new rabbitMQClient('prod.ini', 'DeployServer');
+                         $request= array('target'=$target,  'file'=$path$file);
+                         $prodclient->sendrequest($request);
+
+                 }
+
 	 } else {
          	shell_exec("rsync $path$file $hostname:$landing");
+		 if(strcmp($target, "qa"){
+                         $qaclient= new rabbitMQClient('qa.ini', 'DeployServer');
+                         $request= array('target'=$target,  'file'=$path$file);
+                         $qaclient->sendrequest($request);
+
+                 } elseif(strcmp($target, "prod") {
+                          $prodclient= new rabbitMQClient('prod.ini', 'DeployServer');
+                         $request= array('target'=$target,  'file'=$path$file);
+                         $prodclient->sendrequest($request);
+
+                 }
 	 }
 	 return true;
 true;
@@ -81,14 +124,36 @@ function doFallback($target, $badpath){
         $row=mysqli_fetch_assoc($response);
 	$hostname=$row['hostname'];
 	echo "Here is the host $hostname \n";
-        $landingq="SELECT landing from HOSTS where hostname='$hostname'";
+        $landingq="SELECT landing from HOSTS where hostname='$hostname' and target='$target'";
         $landingres=$mydb->query($landingq);
         $row=mysqli_fetch_assoc($landingres);
 	$landing=$row['landing'];
 	 if(strcmp($hostname, "tirth@it490frontendprod") || strcmp($hostname, "tirth@it490frontendqa")){
-                shell_exec("rsync -e 'ssh -i ~/.ssh/deploymentkey' $filepath $hostname:$landing");
+		 shell_exec("rsync -e 'ssh -i ~/.ssh/deploymentkey' $filepath $hostname:$landing");
+		 if(strcmp($target, "qa"){
+			 $qaclient= new rabbitMQClient('qa.ini', 'DeployServer');
+                         $request= array('target'=$target,  'file'=$path$file);
+                         $qaclient->sendrequest($request);
+
+		 } elseif(strcmp($target, "prod") {
+			  $prodclient= new rabbitMQClient('prod.ini', 'DeployServer');
+                         $request= array('target'=$target,  'file'=$path$file);
+                         $prodclient->sendrequest($request);
+
+		 }
 	 }else {
 		 shell_exec("rsync $filepath $hostname:$landing"); 
+		  if(strcmp($target, "qa"){
+                         $qaclient= new rabbitMQClient('qa.ini', 'DeployServer');
+                         $request= array('target'=$target);
+                         $qaclient->sendrequest($request);
+                 } elseif(strcmp($target, "prod") {
+                          $prodclient= new rabbitMQClient('prod.ini', 'DeployServer');
+                         $request= array('target'=$target);
+                         $prodclient->sendrequest($request);
+
+                 }
+
 	 }
         return true;
 

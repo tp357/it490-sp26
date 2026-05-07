@@ -1,4 +1,4 @@
-!#/usr/bin/php
+#!/usr/bin/php
 
 <?php
 	require_once('path.inc');
@@ -10,12 +10,12 @@
         	$returnstatus = false;
        		$message = array();
 		$sessionID=NULL;
-		$file=$request['file']
+		$file=$request['file'];
 	  echo "received request".PHP_EOL;
 	  var_dump($request);
 	  if(!isset($request['type']))
   	{
-        	  echo "bad messafe type \n";
+        	  echo "bad message type \n";
    		 return "ERROR: unsupported message type";
   	}
 	  switch ($request['target'])
@@ -39,11 +39,11 @@
 			   break;
 
  	 }
-
+	}
 	$server = new rabbitMQServer("prod.ini","DeployServer");
 	echo "DeploymentListener BEGIN".PHP_EOL;
 	$server->process_requests('requestProcessor');
 	echo "DeploymentListener".PHP_EOL;
 	exit();
-
+	
 ?>
