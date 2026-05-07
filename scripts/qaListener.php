@@ -14,7 +14,7 @@
                 $file=$request['file'];
           echo "received request".PHP_EOL;
           var_dump($request);
-          if(!isset($request['type']))
+          if(!isset($request['target']))
         {
                   echo "bad messafe type \n";
                  return "ERROR: unsupported message type";
@@ -22,21 +22,22 @@
           switch ($request['target'])
         {
                   case "frontend":
-                            shell_exec("rm -rm ~/git/it490-sp26/sqlwork/frontend");
-                            shell_exec("tar -xf file -c ~/git/it490-sp26");
+                            shell_exec("rm -rf ~/git/it490-sp26/sqlwork/frontend");
+                            shell_exec("tar -xf $file -C ~/git/it490-sp26");
                             break;
                       case "backend":
-                                shell_exec("rm -rm ~/git/it490-sp26/backend");
-                                shell_exec("tar -xf file -c ~/git/it490-sp26");
+                                shell_exec("rm -rf ~/git/it490-sp26/backend");
+                                shell_exec("tar -xf $file -C ~/git/it490-sp26");
                                 break;
                       case "dmz":
-                              shell_exec("rm -rm ~/git/it490-sp26/backend");
-                              shell_exec("tar -xf $file -c ~/git/it490-sp26");
+                              shell_exec("rm -rf ~/git/it490-sp26/backend");
+                              shell_exec("tar -xf $file -C ~/git/it490-sp26");
                        break;
 
                    case "database":
-                           shell_exec("rm -rm ~/git/it490-sp26/sqlwork");
-                           shell_exec("tar -xf file -c ~/git/it490-sp26");
+                           shell_exec("rm -rf ~/git/it490-sp26/sqlwork");
+                           shell_exec("tar -xf $file -C ~/git/it490-sp26");
+
                            break;
 
 
