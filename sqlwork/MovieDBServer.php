@@ -47,7 +47,7 @@ function addReview($title, $rating, $sessionid) {
         return false;
 	}
 	$userq="SELECT * FROM users WHERE SESSIONID='$sessionid";
-	$response=$mydb->query($userq)
+	$response=$mydb->query($userq);
 	$row=mysqli_fetch_row($response);
 	$username=$row('USERNAME');
 	$ratingid= $username . $title;
@@ -81,18 +81,19 @@ function getMovie($movie){
 	return $result;
 
 }
-function get_recs($sesid) {
+function get_recs($sessionid) {
 	$mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
         if ($mydb->errno != 0)
 	{
       	  echo "failed to connect to database: ". $mydb->error . PHP_EOL;
         	return false;
         }
-	$userq="SELECT * FROM users WHERE SESSIONID='$sessionid";
+	$userq="SELECT USERNAME FROM sessions  WHERE SESSIONID='$sessionid'";
 	$response=$mydb->query($userq);
-        $row=mysqli_fetch_row($response);
-        $username=$row('USERNAME');
-	$reviewsq= "SELECT MOVIE from ratings WHERE USERNAME=`$username AND RATING>3`";
+	$row=mysqli_fetch_row($response);
+	echo "$row[0] \n";
+        $username=$row[0];
+	$reviewsq= "SELECT * FROM reviews WHERE USERNAME='$username'";
 	$reviews=$mydb->query($reviewsq);
 	$row=mysqli_fetch_row($reviews);
 	$movies=$row('MOVIE');
@@ -177,7 +178,7 @@ function requestProcessor($request)
 			$returnstatus=updateReview($request['movie_id'], $request['sessionid'], $request['rating']);
 			break;
 		case "get_recommendations":
-			$recs=get_recs($request['sessionid']);	
+			$recs=get_recs($request['sessionID']);	
 			$returnstatus=false;
 			break;
 
