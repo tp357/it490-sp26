@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/home/phoenix/git/it490-sp26/scripts/qaListener.php
-
+ExecStart=/home/phoenix/git/it490-sp26/scripts/prodListener.php
+User= phoenix
 Restart=always
 RestartSec=1
 
