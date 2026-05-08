@@ -1,9 +1,11 @@
 [Unit]
 Description= Extract Service
+After=network.target
 
 [Service]
 Type=simple
-ExecStart=/home/USERNAME/git/it490-sp25/scripts/qatListener.php
+ExecStart=/home/phoenix/git/it490-sp26/scripts/prodListener.php
+User= phoenix
 Restart=always
 RestartSec=1
 
