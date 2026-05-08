@@ -95,6 +95,10 @@ function get_recs($sesid) {
 	$reviewsq= "SELECT MOVIE from ratings WHERE USERNAME=`$username AND RATING>3`";
 	$reviews=$mydb->query($reviewsq);
 	$row=mysqli_fetch_row($reviews);
+	if ($rows==null){
+		$recs= "Review some movies for recommendations";
+		return $recs
+	}
 	$movies=$row('MOVIE');
 	$moviename=array_rand($movies, 1);
 	$genreq="SELECT GENRE FROM movies WHERE TITLE='$moviename'";
