@@ -71,11 +71,6 @@ class rabbitMQServer
 				$exchange->setName($this->exchange);
 				$exchange->setType($this->exchange_type);
 
-				$conn_queue = new AMQPQueue($channel);
-				$conn_queue->setName($msg->getReplyTo());
-				$replykey = $this->routing_key.".response";
-				$conn_queue->bind($exchange->getName(),$replykey);
-				$exchange->publish(json_encode($response),$replykey,AMQP_NOPARAM,array('correlation_id'=>$msg->getCorrelationId()));
 
 				return;
 			}
