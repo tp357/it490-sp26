@@ -12,28 +12,58 @@ if (!isset($input['query'])) {
     echo json_encode(array('status' => 'error', 'message' => 'incomplete query'));
     exit();
 }
-$client = new rabbitMQClient('../config/servers.ini', 'MovieDBServer');
+$title = trim($input['query']);
+if ($title === '') {
+    http_response_code(400);
+    echo json_encode(array('status' => 'error', 'message' => 'empty query'));
+    exit();
+}
 
-$title = $input['query'];
-$checkRequest = array('type' => 'if_movie_exists', 'title' => $title);
-$checkResponse = $client -> send_request($checkRequest);
-if ($checkResponse && $checkResponse['exists']) {
-    $getRequest = array('type' => 'get_movie_by_title', 'title' => $title);
-    $response = $client -> send_request($getRequest);
+function omdbFetch($url) {
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 8);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        $body = curl_exec($ch);
+        curl_close($ch);
+        return $body;
+    }
+    $context = stream_context_create(array('http' => array('timeout' => 8)));
+    return @file_get_contents($url, false, $context);
+}
+
+$searchUrl = "https://www.omdbapi.com/?s=" . urlencode($title) . "&apikey=" . $api_key;
+$searchResponse = omdbFetch($searchUrl);
+$searchData = json_decode($searchResponse, true);
+
+if ($searchData && ($searchData['Response'] ?? '') === 'True' && !empty($searchData['Search'])) {
+    $movies = array();
+    foreach ($searchData['Search'] as $item) {
+        $movies[] = array(
+            'id' => $item['imdbID'],
+            'title' => $item['Title'],
+            'year' => $item['Year'],
+            'poster' => $item['Poster']
+        );
+    }
     http_response_code(200);
-    echo json_encode(array('status' => 'success', 'source' => 'database', 'movies' => array($response)));
+    echo json_encode(array('status' => 'success', 'source' => 'api', 'movies' => $movies));
     exit();
 }
 
-$url = "http://www.omdbapi.com/?t=" . urlencode($title) . "&apikey=" . $api_key;
-$context = stream_context_create(array('http' => array('timeout' => 5)));
-$apiResponse = @file_get_contents($url, false, $context);
+$exactUrl = "https://www.omdbapi.com/?t=" . urlencode($title) . "&apikey=" . $api_key;
+$apiResponse = omdbFetch($exactUrl);
 $data = json_decode($apiResponse, true);
-if (!$data || $data['Response'] !== 'True') {
+if (!$data || ($data['Response'] ?? '') !== 'True') {
     http_response_code(404);
-    echo json_encode(array('status' => 'error', 'message' => 'Movie not found'));
+    $msg = is_array($data) && isset($data['Error']) ? $data['Error'] : 'Movie not found';
+    echo json_encode(array('status' => 'error', 'message' => $msg));
     exit();
 }
+
+$client = new rabbitMQClient(__DIR__.'/../../servers.ini', 'MovieDBServer');
 
 $movieData = array(
     'type' => 'add_movie',
@@ -53,12 +83,15 @@ $movieData = array(
     'poster' => $data['Poster']
 );
 
-$response = $client -> send_request($movieData);
-if ($response && $response['status'] === 'success') {
-    http_response_code(200);
-    echo json_encode(array('status' => 'success', 'source' => 'api', 'movies' => array($movieData)));
-} else {
-    http_response_code(500);
-    echo json_encode(array('status' => 'error', 'message' => 'Failed to save movie to database'));
-}
+http_response_code(200);
+echo json_encode(array('status' => 'success', 'source' => 'api', 'movies' => array(array(
+    'id' => $data['imdbID'],
+    'title' => $data['Title'],
+    'year' => $data['Year'],
+    'poster' => $data['Poster']
+))));
+if (function_exists('fastcgi_finish_request')) { fastcgi_finish_request(); }
+else { @ob_end_flush(); @flush(); }
+
+$client->publish($movieData);
 ?>

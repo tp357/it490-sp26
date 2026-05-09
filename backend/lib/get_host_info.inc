@@ -8,7 +8,7 @@
 */
 function getHostInfo(?array $extra = NULL)
 {
-    $machine = parse_ini_file("host.ini",$process_sections=true);
+    $machine = parse_ini_file(__DIR__."/../../host.ini", true);
     if ($extra != NULL)
     {
         foreach ($extra as $ini)
