@@ -12,7 +12,7 @@ if (empty($input['user_id']) || empty($input['movie_id'])) {
     exit();
 }
 
-$client = new rabbitMQClient(__DIR__.'../servers.ini', 'AuthServer');
+$client = new rabbitMQClient(__DIR__.'/../servers.ini', 'AuthServer');
 $response = $client->send_request(array(
     'type' => 'remove_from_watchlist',
     'user_id' => $input['user_id'],

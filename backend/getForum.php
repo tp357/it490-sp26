@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$client = new rabbitMQClient(__DIR__.'../servers.ini', 'AuthServer');
+$client = new rabbitMQClient(__DIR__.'/../servers.ini', 'AuthServer');
 
 $response = $client->send_request(array('type' => 'get_posts'));
 

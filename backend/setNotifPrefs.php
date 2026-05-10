@@ -12,7 +12,7 @@ if (empty($input['sessionID'])) {
     exit();
 }
 
-$client = new rabbitMQClient(__DIR__.'../servers.ini', 'EmailServer');
+$client = new rabbitMQClient(__DIR__.'/../servers.ini', 'EmailServer');
 $response = $client->send_request(array(
     'type' => 'set_notifications',
     'sessionID' => $input['sessionID'],

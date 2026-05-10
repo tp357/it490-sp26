@@ -63,7 +63,7 @@ if (!$data || ($data['Response'] ?? '') !== 'True') {
     exit();
 }
 
-$client = new rabbitMQClient(__DIR__.'../servers.ini', 'MovieDBServer');
+$client = new rabbitMQClient(__DIR__.'/../servers.ini', 'MovieDBServer');
 
 $movieData = array(
     'type' => 'add_movie',

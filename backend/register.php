@@ -12,7 +12,7 @@ if (empty($input['username']) || empty($input['password'])) {
     exit();
 }
 
-$client = new rabbitMQClient(__DIR__.'../servers.ini', 'AuthServer');
+$client = new rabbitMQClient(__DIR__.'/../servers.ini', 'AuthServer');
 // $hashedPassword = password_hash($input['password'], PASSWORD_BCRYPT);
 $response = $client->send_request(array(
     'type' => 'registration',

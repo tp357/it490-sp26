@@ -12,7 +12,7 @@ if (empty($input['user_id']) || empty($input['content'])) {
     exit();
 }
 
-$client = new rabbitMQClient(__DIR__.'../servers.ini', 'AuthServer');
+$client = new rabbitMQClient(__DIR__.'/../servers.ini', 'AuthServer');
 $response = $client->send_request(array(
     'type' => 'add_post',
     'user_id' => $input['user_id'],

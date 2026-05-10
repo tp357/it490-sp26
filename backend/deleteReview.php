@@ -12,7 +12,7 @@ if (empty($input['movie_id']) || empty($input['sessionID'])) {
     exit();
 }
 
-$client = new rabbitMQClient(__DIR__.'../servers.ini', 'MovieDBServer');
+$client = new rabbitMQClient(__DIR__.'/../servers.ini', 'MovieDBServer');
 $response = $client->send_request(array(
     'type' => 'delete_review',
     'movie_id' => $input['movie_id'],

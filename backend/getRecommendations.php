@@ -10,7 +10,7 @@ if (empty($input['sessionID'])) {
     exit();
 }
 
-$client = new rabbitMQClient(__DIR__.'../servers.ini', 'MovieDBServer');
+$client = new rabbitMQClient(__DIR__.'/../servers.ini', 'MovieDBServer');
 $response = $client->send_request(array(
     'type' => 'get_recommendations',
     'sessionid' => $input['sessionID']
