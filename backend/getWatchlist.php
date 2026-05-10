@@ -12,7 +12,7 @@ if (empty($input['user_id'])) {
     exit();
 }
 
-$client = new rabbitMQClient(__DIR__.'/../../servers.ini', 'AuthServer');
+$client = new rabbitMQClient(__DIR__.'/../servers.ini', 'AuthServer');
 
 $request = array('type' => 'get_watchlist', 'user_id' => $input['user_id']);
 

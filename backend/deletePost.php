@@ -12,7 +12,7 @@ if (empty($input['post_id']) || empty($input['user_id'])) {
     exit();
 }
 
-$client = new rabbitMQClient(__DIR__.'/../../servers.ini', 'AuthServer');
+$client = new rabbitMQClient(__DIR__.'/../servers.ini', 'AuthServer');
 $response = $client->send_request(array(
     'type' => 'delete_post',
     'post_id' => $input['post_id'],

@@ -12,7 +12,7 @@ if (empty($input['sessionID'])) {
     exit();
 }
 
-$client = new rabbitMQClient(__DIR__.'/../../servers.ini', 'AuthServer');
+$client = new rabbitMQClient(__DIR__.'/../servers.ini', 'AuthServer');
 
 $request = array('type' => 'validate_session', 'sessionID' => $input['sessionID']);
 

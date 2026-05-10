@@ -12,7 +12,7 @@ if (empty($input['movie_id']) && empty($input['title'])) {
 
 $lookup = !empty($input['title']) ? $input['title'] : $input['movie_id'];
 
-$client = new rabbitMQClient(__DIR__.'/../../servers.ini', 'MovieDBServer');
+$client = new rabbitMQClient(__DIR__.'/../servers.ini', 'MovieDBServer');
 $response = $client->send_request(array(
     'type' => 'get_one_movie',
     'movie_id' => $lookup
