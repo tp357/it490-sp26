@@ -230,10 +230,9 @@ class rabbitMQClient
 			unset($this->response_queue[$uid]);
 			return $response;
 		}
-		catch(\Throwable $e)
+		catch(Exception $e)
 		{
-			error_log("rabbitMQClient::send_request: ".$e->getMessage());
-			return array('status' => 'error', 'message' => 'rabbitmq unavailable');
+			die("failed to send message to exchange: ". $e->getMessage()."\n");
 		}
 	}
 
@@ -266,10 +265,9 @@ class rabbitMQClient
 			$this->conn_queue->bind($exchange->getName(),$this->routing_key);
 			return $exchange->publish($json_message,$this->routing_key);
 		}
-		catch(\Throwable $e)
+		catch(Exception $e)
 		{
-			error_log("rabbitMQClient::publish: ".$e->getMessage());
-			return false;
+			die("failed to send message to exchange: ". $e->getMessage()."\n");
 		}
 	}
 }
