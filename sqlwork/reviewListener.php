@@ -86,7 +86,7 @@ echo $message;
 }
 
 
-$server = new rabbitMQServer("testRabbitMQ.ini","ReviewServer");
+$server = new rabbitMQServer("../hosts.ini","ReviewServer");
 
 echo "reviewListener BEGIN".PHP_EOL;
 $server->process_requests('requestProcessor');

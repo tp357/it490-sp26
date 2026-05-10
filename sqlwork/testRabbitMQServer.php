@@ -122,16 +122,16 @@ function requestProcessor($request)
   }
   
   if($returnstatus){
-	  echo "here is the session ID", $sessionID;
+	  echo "here is the session ID $sessionID \n";
   	$message = array("status" => 'success', "sessionID" =>"$sessionID", 'message'=>"Server received request and processed");
   } else {
 	$message = array("status"=>"This shit ain't work");
   }
-echo $message;	 
+echo "$message[status] \n";	 
   return $message;
 }
 
-$server = new rabbitMQServer("testRabbitMQ.ini","AuthServer");
+$server = new rabbitMQServer("../hosts.ini","AuthServer");
 
 echo "testRabbitMQServer BEGIN".PHP_EOL;
 $server->process_requests('requestProcessor');

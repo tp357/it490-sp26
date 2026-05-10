@@ -200,12 +200,12 @@ function requestProcessor($request)
 	$exists=false;
         $message = array("exists"=>"$exists");
   }
-echo $message;
+echo "$message[status] \n";
   return $message;
 }
 
 
-$server = new rabbitMQServer("Moviedb.ini","MovieDBServer");
+$server = new rabbitMQServer("../hosts.ini","MovieDBServer");
 
 echo "MovieDBServer BEGIN".PHP_EOL;
 $server->process_requests('requestProcessor');
