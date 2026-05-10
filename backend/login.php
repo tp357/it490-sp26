@@ -15,7 +15,7 @@ $request = array('type' => 'login', 'username' => $input['username'], 'password'
 $response = $client->send_request($request);
 
 if ($response['status'] === 'success') {
-    http_response_code(response_code: 200);
+    http_response_code(200);
     echo json_encode($response);
 } else {
     http_response_code(401);
