@@ -47,7 +47,7 @@ function addReview($title, $rating, $sessionid) {
         return false;
 	}
 	$userq="SELECT * FROM users WHERE SESSIONID='$sessionid";
-	$response=$mydb->query($userq)
+	$response=$mydb->query($userq);
 	$row=mysqli_fetch_row($response);
 	$username=$row('USERNAME');
 	$ratingid= $username . $title;
@@ -97,7 +97,7 @@ function get_recs($sesid) {
 	$row=mysqli_fetch_row($reviews);
 	if ($rows==null){
 		$recs= "Review some movies for recommendations";
-		return $recs
+		return $recs;
 	}
 	$movies=$row('MOVIE');
 	$moviename=array_rand($movies, 1);
