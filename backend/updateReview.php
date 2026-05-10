@@ -10,7 +10,7 @@ if (empty($input['movie_id']) || empty($input['sessionID']) || !isset($input['ra
     exit();
 }
 
-$client = new rabbitMQClient(__DIR__.'/../../servers.ini', 'MovieDBServer');
+$client = new rabbitMQClient(__DIR__.'../servers.ini', 'MovieDBServer');
 $response = $client->send_request(array(
     'type' => 'update_review',
     'movie_id' => $input['movie_id'],

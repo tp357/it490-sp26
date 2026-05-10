@@ -12,7 +12,7 @@ if (empty($input['username']) || empty($input['password'])) {
     exit();
 }
 
-$client = new rabbitMQClient(__DIR__.'/../../servers.ini', 'AuthServer');
+$client = new rabbitMQClient(__DIR__.'../servers.ini', 'AuthServer');
 
 $request = array('type' => 'login', 'username' => $input['username'], 'password' => $input['password']);
 

@@ -12,7 +12,7 @@ if (empty($input['movie_id'])) {
     exit();
 }
 
-$client = new rabbitMQClient(__DIR__.'/../../servers.ini', 'ReviewServer');
+$client = new rabbitMQClient(__DIR__.'../servers.ini', 'ReviewServer');
 $response = $client->send_request(array(
     'type' => 'get_reviews',
     'movie_id' => $input['movie_id']
