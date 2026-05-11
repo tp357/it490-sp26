@@ -27,22 +27,14 @@
             XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
             XMLHttpInstance.onreadystatechange = function() {
                 if (XMLHttpInstance.readyState === 4) {
-                    try {
+                    try { 
                         var response = JSON.parse(XMLHttpInstance.responseText);
-                        console.log("Response:", response);
-                        if (XMLHttpInstance.status === 200) {
-                            if (response.movie) {
-                                showMovie(response.movie);
-                            } else if (response.status === 'success' && response.status) {
-                                showMovie(response);
-                            } else {
-                                document.getElementById("movieDetails").innerHTML = "<p>Results not found.</p>";
-                            }
+                        if (XMLHttpInstance.status === 200 && response.movie) {
+                            showMovie(response.movie);
                         } else {
                             document.getElementById("movieDetails").innerHTML = "<p>Results not found.</p>";
                         }
                     } catch(err) {
-                        console.error("Error:", err);
                         document.getElementById("movieDetails").innerHTML = "<p>Error retrieving the movie.</p>";
                     }
                 }
