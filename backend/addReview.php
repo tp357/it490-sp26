@@ -1,5 +1,7 @@
 <?php
 require_once('lib/path.inc');
+require_once('lib/get_host_info.inc');
+require_once('lib/rabbitMQLib.inc');
 
 header('Content-Type: application/json');
 
@@ -16,7 +18,7 @@ $response = $client->send_request(array(
     'movie_id' => $input['movie_id'],
     'user_id' => $input['sessionID'],
     'rating' => $input['rating'],
-    'review_text' => $input['review_text'] ?? ''
+    'reasoning' => $input['reasoning'] ?? ''
 ));
 
 $ok = is_array($response) && ($response['status'] ?? '') === 'success';

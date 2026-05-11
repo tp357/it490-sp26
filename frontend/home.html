@@ -96,8 +96,7 @@
 			movieList.innerHTML = '<h2> Results: </h2>';
 			movies.forEach(function(movie) {
 				var listItem = document.createElement("li");
-				listItem.innerHTML = '<a href="movie.html?movie_id='
-				+ movie.id + '">' + movie.title + ' ('+ movie.year +')</a>';
+				listItem.innerHTML = '<a href="movie.html?movie_id=' + movie.id + '">' + movie.title + ' ('+ movie.year +')</a>';
 				movieList.appendChild(listItem);
 			});
 		}
@@ -137,8 +136,7 @@
 			}
 			movies.forEach(function(movie){
 				var listItem  = document.createElement("li");
-				listItem.innerHTML = '<a href="movie.html?movie_id='
-				+ movie.id + '">' + movie.title + ' ('+ movie.year +')</a>';
+				listItem.innerHTML = '<a href="movie.html?movie_id=' + movie.id + '">' + movie.title + ' ('+ movie.year +')</a>';
 				recs.appendChild(listItem);
 			});
 		}

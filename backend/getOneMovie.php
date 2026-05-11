@@ -1,21 +1,23 @@
 <?php
 require_once('lib/path.inc');
+require_once('lib/get_host_info.inc');
+require_once('lib/rabbitMQLib.inc');
 
 header('Content-Type: application/json');
 
 $input = json_decode(file_get_contents('php://input'), true);
-if (empty($input['movie_id']) && empty($input['title'])) {
+if (empty($input['movie_id'])) {
     http_response_code(400);
-    echo json_encode(array('status' => 'error', 'message' => 'movie_id or title required'));
+    echo json_encode(array('status' => 'error', 'message' => 'movie_id required'));
     exit();
 }
 
-$lookup = !empty($input['title']) ? $input['title'] : $input['movie_id'];
+$movie_id = $input['movie_id'];
 
 $client = new rabbitMQClient(__DIR__.'/../servers.ini', 'MovieDBServer');
 $response = $client->send_request(array(
     'type' => 'get_one_movie',
-    'movie_id' => $lookup
+    'movie_id' => $movie_id
 ));
 
 if (is_array($response) && ($response['status'] ?? '') === 'success' && isset($response['movie'])) {
@@ -25,14 +27,11 @@ if (is_array($response) && ($response['status'] ?? '') === 'success' && isset($r
 }
 
 $api_key = 'b28607cf';
-$imdbID = $input['movie_id'] ?? '';
-$title = $input['title'] ?? '';
 
-$omdbUrl = '';
-if ($imdbID && preg_match('/^tt\d+$/', $imdbID)) {
-    $omdbUrl = "https://www.omdbapi.com/?i=" . urlencode($imdbID) . "&apikey=" . $api_key;
-} elseif ($title) {
-    $omdbUrl = "https://www.omdbapi.com/?t=" . urlencode($title) . "&apikey=" . $api_key;
+if (preg_match('/^tt\d+$/', $movie_id)) {
+    $omdbUrl = "https://www.omdbapi.com/?i=" . urlencode($movie_id) . "&apikey=" . $api_key;
+} else {
+    $omdbUrl = "https://www.omdbapi.com/?t=" . urlencode($movie_id) . "&apikey=" . $api_key;
 }
 
 if ($omdbUrl) {
