@@ -48,13 +48,13 @@
 
         function showMovie(movie) {
             document.getElementById("movieDetails").innerHTML = `
-                <h1>${movie.title}</h1>
-                <img src="${movie.poster}" alt="Movie Poster" style="max-width:200px;">
-                <p>Overview: ${movie.plot}</p>
-                <p>Year: ${movie.year}</p>
-                <p>Rating: ${movie.rating}</p>
-                <p>Genre: ${movie.genre}</p>
-                <p>Director: ${movie.director}</p>
+                <h1>${movie.title || movie.TITLE}</h1>
+                <img src="${movie.poster || movie.POSTER}" alt="Movie Poster" style="max-width:200px;">
+                <p>Overview: ${movie.plot || movie.PLOT}</p>
+                <p>Year: ${movie.year || movie.YEAR}</p>
+                <p>Rating: ${movie.rating || movie.RATING}</p>
+                <p>Genre: ${movie.genre || movie.GENRE}</p>
+                <p>Director: ${movie.director || movie.DIRECTOR}</p>
             `;
         }
 

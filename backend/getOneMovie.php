@@ -20,7 +20,7 @@ $response = $client->send_request(array(
     'type' => 'get_one_movie',
     'movie_id' => $movie_id
 ));
-if (is_array($response)) {
+if (is_array($response) && !empty($response)) {
     $response = array('status' => 'success', 'movie' => $response);
     http_response_code(200);
     echo json_encode($response);
