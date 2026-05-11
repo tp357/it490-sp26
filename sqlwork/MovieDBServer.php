@@ -6,79 +6,53 @@ require_once('rabbitMQLib.inc');
 
 
 
-function addMovie($title, $year, $rating, $released, $runtime, $genre, $director, $writer, $actors, $plot, $language, $country, $poster){
+function addMovie($title, $year, $rating, $released, $runtime, $genre, $director, $writer, $actors, $plot, $language, $country, $poster, $movieid){
 
  $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
         if ($mydb->errno != 0)
 {
         echo "failed to connect to database: ". $mydb->error . PHP_EOL;
         return false;
-        }
-	$checkq="SELECT * FROM movies WHERE TITLE='$title'";
-	$response=$mydb->query($checkq);
-	if(mysqli_num_rows($response)!=0){
-		$addquery="INSERT INTO movies VALUES ('$title', '$year', '$rating', $released', $runtime', '$genre', '$director', '$writer', '$actors', '$plot', '$language', '$country', '$poster')";
-		$mydb->query($addquery);
+	}
+	$checkq= "SELECT * FROM movies WHERE TITLE='$title'";
+	$checkres=$mydb->query($checkq);
+	if(mysqli_num_rows($checkres)>0){
+		echo "movie already in db \n";
 		return true;
 	}
+	$addquery="INSERT INTO movies (TITLE, YEAR, RATING, RELEASEDATE, RUNTIME, GENRE, DIRECTOR, WRITER, ACTORS, PLOT, LANGUAGE, COUNTRY, POSTER, MOVIEID) VALUES ('$title', '$year', '$rating', '$released', '$runtime', '$genre', '$director', '$writer', '$actors', '$plot', '$language', '$country', '$poster', '$movieid')";
+		$mydb->query($addquery);
+		return true;
 
 }
-function movieCheck($title){
+function movieCheck($movieid){
  $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
         if ($mydb->errno != 0)
 {
         echo "failed to connect to database: ". $mydb->error . PHP_EOL;
         return false;
         }
-	$checkquery="SELECT * FROM movies WHERE TITLE='$title'";
+	$checkquery="SELECT * FROM movies WHERE MOVIEID='$movieid'";
 	$response=$mydb->query($checkquery);
-	if(mysqli_num_rows($response)==0){
+	if(mysqli_num_rows($response)!==0){
 		return true;
 	} else {
 		return false;
 	}
 }
 
-function addReview($title, $rating, $sessionid) {
- $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
-        if ($mydb->errno != 0)
-{
-        echo "failed to connect to database: ". $mydb->error . PHP_EOL;
-        return false;
-	}
-	$userq="SELECT * FROM users WHERE SESSIONID='$sessionid";
-	$response=$mydb->query($userq);
-	$row=mysqli_fetch_row($response);
-	$username=$row('USERNAME');
-	$ratingid= $username . $title;
-	$addreviewq="INSERT INTO reviews (RATING, TITLE, USERNAME, ratingid)  VALUES ('$rating', '$title', '$username', '$ratingid')";
-	$mydb->query($addreviewq);
-	return true;
-}
 
-
-function getReviews($movieid){
-	 $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
-        if ($mydb->errno != 0)
-{
-        echo "failed to connect to database: ". $mydb->error . PHP_EOL;
-        return false;
-        }
-	$getquery="SELECT * FROM reviews WHERE MOVIE='$movieid'";
-	$reviews=$mydb->query($getquery);
-	return $reviews;
-}
-
-function getMovie($movie){
+function getMovie($movieid){
     $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
         if ($mydb->errno != 0)
 {
         echo "failed to connect to database: ". $mydb->error . PHP_EOL;
         return false;
         }
-	$getquery="SELECT * FROM movies WHERE TITLE='$movie'";
+	$getquery="SELECT * FROM movies WHERE MOVIEID='$movieid'";
 	$result=$mydb->query($getquery);
-	return $result;
+	$movie=mysqli_fetch_assoc($result);
+	return $movie;
 
 }
 function get_recs($sesid) {
@@ -92,7 +66,7 @@ function get_recs($sesid) {
 	$response=$mydb->query($userq);
         $row=mysqli_fetch_row($response);
         $username=$row('USERNAME');
-	$reviewsq= "SELECT MOVIE from ratings WHERE USERNAME=`$username AND RATING>3`";
+	$reviewsq= "SELECT MOVIE from ratings WHERE USERNAME=`$username' AND RATING>3`";
 	$reviews=$mydb->query($reviewsq);
 	$row=mysqli_fetch_row($reviews);
 	if ($rows==null){
@@ -111,23 +85,6 @@ function get_recs($sesid) {
 	$recs=$row('TITLE');
 	return $recs;
 }
-function updateReview($title, $sessionid, $rating){
- $mydb = new mysqli('127.0.0.1','testuser','testpassword','490db');
-        if ($mydb->errno != 0)
-{
-        echo "failed to connect to database: ". $mydb->error . PHP_EOL;
-        return false;
-        }
-	$userq="SELECT * FROM users WHERE SESSIONID='$sessionid";
-	$response=$mydb->query($userq);
-        $row=mysqli_fetch_row($response);
-        $username=$row('USERNAME');
-        $ratingid= $username . $title;
-	$updateq= "UPDATE reviews set RATING='$rating' where ratingid='$ratingid'";
-	$mydb->query($updateq);
-	return true;
-
-	}
 
 function requestProcessor($request)
 {
@@ -148,21 +105,23 @@ function requestProcessor($request)
   switch ($request['type'])
   {
  		 case "add_movie":
-	  		 add_Movie($request['title'], $request ['year'], $request['rating'], $request['released'], $request['runtime'], $request['genre'], $request['director'], $request['writer'], $request['actors'], $request['plot'], $request['language'], $request['country'], $request['poster']);
+	  		 $returnstatus=addMovie($request['title'], $request ['year'], $request['rating'], $request['released'], $request['runtime'], $request['genre'], $request['director'], $request['writer'], $request['actors'], $request['plot'], $request['language'], $request['country'], $request['poster'], $request['id']);
 			 echo "debugging add movie\n";
 			 break; 
- 		 case "get_one_movie":
+		 case "get_one_movie":
+			$movie=getMovie($request['movie_id']);
+			if ($movie!==null){
+				$returnstatus=true;
+			}
 			echo "hi this is debugging get :D";
 			break;
 		case "if_movie_exists";
-			$returnstatus=movieCheck($request['title']);	
+			$returnstatus=movieCheck($request['movie_id']);	
 			$exists=$returnstatus;
+			echo "exists = $exists\n";
 			echo "hi this is debugging movie check\n";		
 			break;
 		 
-		 case "add_review":
-			$returnstatus=addReview($request['movie_id'], $request['rating'], $request['sessionid']);
-			echo "this is me debugging addmovie which adds a rating\n ";
 		 case "get_one_movie":
 			 $movie=getMovie($request['movie_id']);
 			 if ($movie!=NULL){
@@ -170,16 +129,6 @@ function requestProcessor($request)
 			 }
 			break;
 
-		case "get_reviews":
-			$ratings=getReviews($request['movie_id']);
-			if ($ratings!=NULL){
-				$returnstatus=true;
-			}
-			break;
-
-		case "update_review":
-			$returnstatus=updateReview($request['movie_id'], $request['sessionid'], $request['rating']);
-			break;
 		case "get_recommendations":
 			$recs=get_recs($request['sessionid']);	
 			$returnstatus=false;
@@ -187,18 +136,19 @@ function requestProcessor($request)
 
   	}
   if($returnstatus && $exists){
-        $message = array("status" => 'success', 'message'=>"Server received request and processed", 'exists'=>"$exists");
-  } elseif($ratings!=NULL) {
-        $message = array("status" => 'success', 'message'=>"Server received request and processed", 'ratings'=>"$ratings");
+        $message = array("status" => 'success', 'message'=>"Server received request and processed", 'exists'=>true);
   } elseif ($movie!=NULL){
-	 $message = array("status" => 'success', 'message'=>"Server received request and processed", 'movie'=>"$movie");
+	  return $movie;
+	 $message = array("status" => 'success', 'message'=>"Server received request and processed", 'movie'=>$movie);
   }
-  elseif ($returnstatus==false){
-	$message = array("status" => 'failure');
+  elseif ($returnstatus==false && $exists==false){
+	$message = array("status" => 'success');
+  }
+  elseif ($returnstatus) {
+        $message = array("status"=>"success", "messaage"=> "movie added");
   }
   else {
-	$exists=false;
-        $message = array("exists"=>"$exists");
+	$message=array("status"=>"failure");
   }
 echo "$message[status] \n";
   return $message;

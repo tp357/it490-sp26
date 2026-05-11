@@ -10,16 +10,16 @@ function addReview($movie, $sessionid, $review, $reasoning){
 {
         echo "failed to connect to database: ". $mydb->error . PHP_EOL;
         return false;
-        }
-	$userquery="SELECT USERNAME from users WHERE SESSIONID='$sessionid'";
+	}
+	$userquery="SELECT * from sessions WHERE SESSIONID='$sessionid'";
 	$userresult=$mydb->query($userquery);
-	$row=mysqli_fetch_row($useresult);
+	$row=mysqli_fetch_assoc($userresult);
 	$username=$row["USERNAME"];
-	$addquery="INSERT into REVIEWS VALUES ('$review', '$username', '$movie', '$reasoning')";
+	$addquery="INSERT into reviews VALUES ('$review', '$username', '$movie', '$reasoning')";
 	$mydb->query($addquery);
 		
-	$checkquery="SELECT * FROM REVIEWS WHERE MOVIE='$movie' AND USERNAME='$username'";
-	$checkresponse=$mydb->query($checkquery);
+	$checkquery="SELECT * FROM reviews WHERE MOVIE='$movie' AND USERNAME='$username'";
+	$checkresult=$mydb->query($checkquery);
 	if(mysqli_num_rows($checkresult)!=0){
 		echo "query added\n";
 		return true;
@@ -37,9 +37,10 @@ function getReview($movieid) {
         echo "failed to connect to database: ". $mydb->error . PHP_EOL;
         return false;
         }
-	$moviequery="SELECT * FROM reviews WHERE MOVIE='$movie'";
-	$movieresponse=$mydb->query($moviequery);
-	if(mysqli_num_rows($movieresponse)!=0){
+	$moviequery="SELECT * FROM reviews WHERE MOVIE='$movieid' ORDER BY RAND() LIMIT 5";
+	$movieresult=$mydb->query($moviequery);
+	$movieresponse=mysqli_fetch_assoc($movieresult);
+	if(mysqli_num_rows($movieresult)!=0){
 		echo "reviews gotten\n";
 		return $movieresponse;
 	} else {
@@ -65,23 +66,22 @@ function requestProcessor($request)
         {
 		  case "get_reviews":
 	  		$reviews=getReview($request['movie_id']);
-			echo "hi this is debugging get :D";
 			if($reviews!=null){
 				$returnstatus=true;
+
 			}
 			break;
 		  case "add_review":
-			 $returnstatus= addReview($request['movie_id'], $request['user_id'], $request['rating'], $request['review_text']);
-
+			 $returnstatus= addReview($request['movie_id'], $request['user_id'], $request['rating'], $request['reasoning']);
                         echo "hi this is debugging send :D";
                         break;
         }
   if($returnstatus){
-        $message = array("status" => 'success','reviews'=>"$reviews", 'message'=>"Server received request and processed");
+	  return $reviews;
+        $message = array("status" => 'success','reviews'=>$reviews, 'message'=>"Server received request and processed");
                                  } else {
         $message = array("status"=>"This shit ain't work");
   }
-echo $message;
   return $message;
 }
 
