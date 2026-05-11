@@ -78,19 +78,19 @@ if (function_exists('curl_init')) {
         $client->publish(array(
             'type' => 'add_movie',
             'id' => $data['imdbID'],
-            'title' => $data['Title'],
-            'year' => $data['Year'],
-            'rating' => $data['Rated'],
-            'released' => $data['Released'],
-            'runtime' => $data['Runtime'],
-            'genre' => $data['Genre'],
-            'director' => $data['Director'],
-            'writer' => $data['Writer'],
-            'actors' => $data['Actors'],
-            'plot' => $data['Plot'],
-            'language' => $data['Language'],
-            'country' => $data['Country'],
-            'poster' => $data['Poster']
+            'title' => addslashes($data['Title']),
+            'year' => addslashes($data['Year']),
+            'rating' => addslashes($data['Rated']),
+            'released' => addslashes($data['Released']),
+            'runtime' => addslashes($data['Runtime']),
+            'genre' => addslashes($data['Genre']),
+            'director' => addslashes($data['Director']),
+            'writer' => addslashes($data['Writer']),
+            'actors' => addslashes($data['Actors']),
+            'plot' => addslashes($data['Plot']),
+            'language' => addslashes($data['Language']),
+            'country' => addslashes($data['Country']),
+            'poster' => addslashes($data['Poster'])
         ));
         exit();
     }
