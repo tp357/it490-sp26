@@ -18,7 +18,7 @@ $response = $client->send_request(array(
     'movie_id' => $input['movie_id']
 ));
 
-$response = array('status' => 'success', 'reviews' => $response);
+$response = array('status' => 'success', 'reviews' => $response['reviews']);
 
 http_response_code(200);
 echo json_encode($response);
