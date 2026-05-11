@@ -18,8 +18,6 @@ $response = $client->send_request(array(
     'movie_id' => $input['movie_id']
 ));
 
-error_log("getReviews response: " . print_r($response, true));
-
 if (is_array($response)) {
     if (isset($response[0]) && !isset($response['reviews'])) {
         $response = array('status' => 'success', 'reviews' => $response);

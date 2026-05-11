@@ -74,15 +74,12 @@
                 if (XMLHttpInstance.readyState === 4) {
                     try { 
                         var response = JSON.parse(XMLHttpInstance.responseText);
-                        console.log("Reviews response:", response);
                         if (XMLHttpInstance.status === 200 && response.reviews) {
                             showReviews(response.reviews);
                         } else {
-                            console.log("No reviews in response, status:", XMLHttpInstance.status, "reviews:", response.reviews);
                             document.getElementById("reviewsList").innerHTML = "<p>No reviews found for this movie.</p>";
                         }
                     } catch(err) {
-                        console.error("Reviews error:", err, XMLHttpInstance.responseText);
                         document.getElementById("reviewsList").innerHTML = "<p>Error retrieving the reviews.</p>";
                     }
                 }
@@ -97,81 +94,21 @@
                 list.innerHTML = "<p>No reviews found for this movie.</p>";
                 return;
             }
-            var currentUserId = localStorage.getItem("user_id");
             reviews.forEach(function(review) {
                 var div = document.createElement("div");
                 div.className = "review";
-                var buttons = '';
-                // Show edit/delete only if this is current user's review
-                if (review.user_id == currentUserId) {
-                    buttons = `
-                        <button onclick="editReview(${review.rating})">Edit</button>
-                        <button onclick="deleteReview()">Delete</button>
-                    `;
-                }
+                var username = review.username || review.USERNAME || review.user_id || 'Unknown';
+                var rating = review.rating || review.RATING || 'N/A';
+                var reasoning = review.reasoning || review.REASONING || '';
                 div.innerHTML = `
-                    <p>User: ${review.username}</p>
-                    <p>Rating: ${review.rating}</p>
-                    ${buttons}
+                    <p>User: ${username}</p>
+                    <p>Rating: ${rating}</p>
+                    ${reasoning ? `<p>Review: ${reasoning}</p>` : ''}
                 `;
                 list.appendChild(div);
             });
         }
 
-        function editReview(currentRating) {
-            var newRating = prompt("Enter new rating (1-5):", currentRating);
-            if (!newRating || newRating < 1 || newRating > 5) {
-                alert("Invalid rating");
-                return;
-            }
-            var sessionID = localStorage.getItem("sessionID");
-            var movie_id = getMovieID();
-            var url = "../backend/updateReview.php";
-            var message = JSON.stringify({
-                movie_id: movie_id,
-                sessionID: sessionID,
-                rating: newRating
-            });
-            const XMLHttpInstance = new XMLHttpRequest();
-            XMLHttpInstance.open("POST", url, true);
-            XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
-            XMLHttpInstance.onreadystatechange = function() {
-                if (XMLHttpInstance.readyState === 4) {
-                    if (XMLHttpInstance.status === 200) {
-                        alert("Review updated.");
-                        getReviews(getMovieID());
-                    } else {
-                        alert("Failed to update review.");
-                    }
-                }
-            };
-            XMLHttpInstance.send(message);
-        }
-
-        function deleteReview() {
-            if (!confirm("Delete your review?")) return;
-            var sessionID = localStorage.getItem("sessionID");
-            var movie_id = getMovieID();
-            var url = "../backend/deleteReview.php";
-            var message = JSON.stringify({
-                movie_id: movie_id,
-                sessionID: sessionID
-            });
-            const XMLHttpInstance = new XMLHttpRequest();
-            XMLHttpInstance.open("POST", url, true);
-            XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
-            XMLHttpInstance.onreadystatechange = function() {
-                if (XMLHttpInstance.readyState === 4) {
-                    if (XMLHttpInstance.status === 200) {
-                        alert("Review deleted.");
-                        getReviews(getMovieID());
-                    } else {
-                        alert("Failed to delete review.");
-                    }
-                }
-            };
-            XMLHttpInstance.send(message);
-        }
 
         document.addEventListener('DOMContentLoaded', function() {
             var form = document.getElementById("reviewForm");
