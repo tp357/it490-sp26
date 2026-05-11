@@ -21,12 +21,16 @@ $existsResponse = $client->send_request(array(
     'movie_id' => $movie_id
 ));
 
-if (isset($existsResponse['exists'])) {
+if (isset($existsResponse['exists']) && $existsResponse['exists'] === true) {
     $response = $client->send_request(array(
         'type' => 'get_one_movie',
         'movie_id' => $movie_id
     ));
-    $response = array('status' => 'success', 'movie' => $response['movie']);
+    if (isset($response['movie'])) {
+        $response = array('status' => 'success', 'movie' => $response['movie']);
+    } else {
+        $response = array('status' => 'success', 'movie' => $response);
+    }
     http_response_code(200);
     echo json_encode($response);
     exit();
