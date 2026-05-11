@@ -34,24 +34,6 @@ function omdbFetch($url) {
     return @file_get_contents($url, false, $context);
 }
 
-$client = new rabbitMQClient(__DIR__.'/../servers.ini', 'MovieDBServer');
-
-$dbResponse = $client->send_request(array(
-    'type' => 'get_one_movie',
-    'movie_id' => $title
-));
-if (is_array($dbResponse) && ($dbResponse['status'] ?? '') === 'success' && is_array($dbResponse['movie'] ?? null)) {
-    $m = $dbResponse['movie'];
-    http_response_code(200);
-    echo json_encode(array('status' => 'success', 'source' => 'db', 'movies' => array(array(
-        'id' => $m['TITLE'],
-        'title' => $m['TITLE'],
-        'year' => $m['YEAR'],
-        'poster' => $m['POSTER']
-    ))));
-    exit();
-}
-
 $searchUrl = "https://www.omdbapi.com/?s=" . urlencode($title) . "&apikey=" . $api_key;
 $searchResponse = omdbFetch($searchUrl);
 $searchData = json_decode($searchResponse, true);
@@ -81,24 +63,6 @@ if (!$data || ($data['Response'] ?? '') !== 'True') {
     exit();
 }
 
-$movieData = array(
-    'type' => 'add_movie',
-    'id' => $data['imdbID'],
-    'title' => $data['Title'],
-    'year' => $data['Year'],
-    'rating' => $data['Rated'],
-    'released' => $data['Released'],
-    'runtime' => $data['Runtime'],
-    'genre' => $data['Genre'],
-    'director' => $data['Director'],
-    'writer' => $data['Writer'],
-    'actors' => $data['Actors'],
-    'plot' => $data['Plot'],
-    'language' => $data['Language'],
-    'country' => $data['Country'],
-    'poster' => $data['Poster']
-);
-
 http_response_code(200);
 echo json_encode(array('status' => 'success', 'source' => 'api', 'movies' => array(array(
     'id' => $data['imdbID'],
@@ -106,8 +70,4 @@ echo json_encode(array('status' => 'success', 'source' => 'api', 'movies' => arr
     'year' => $data['Year'],
     'poster' => $data['Poster']
 ))));
-if (function_exists('fastcgi_finish_request')) { fastcgi_finish_request(); }
-else { @ob_end_flush(); @flush(); }
-
-$client->publish($movieData);
 ?>
