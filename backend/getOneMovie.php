@@ -20,11 +20,12 @@ $response = $client->send_request(array(
     'type' => 'get_one_movie',
     'movie_id' => $movie_id
 ));
+$foundInDB = false;
 if (is_array($response)) {
     $response = array('status' => 'success', 'movie' => $response);
+    $foundInDB = true;
     http_response_code(200);
     echo json_encode($response);
-    exit();
 }
 
 $api_key = 'b28607cf';
@@ -71,23 +72,25 @@ if ($omdbUrl) {
         if (function_exists('fastcgi_finish_request')) { fastcgi_finish_request(); }
         else { @ob_end_flush(); @flush(); }
 
-        $client->publish(array(
-            'type' => 'add_movie',
-            'id' => $data['imdbID'],
-            'title' => $data['Title'],
-            'year' => $data['Year'],
-            'rating' => $data['Rated'],
-            'released' => $data['Released'],
-            'runtime' => $data['Runtime'],
-            'genre' => $data['Genre'],
-            'director' => $data['Director'],
-            'writer' => $data['Writer'],
-            'actors' => $data['Actors'],
-            'plot' => $data['Plot'],
-            'language' => $data['Language'],
-            'country' => $data['Country'],
-            'poster' => $data['Poster']
-        ));
+        if (!$foundInDB) {
+            $client->publish(array(
+                'type' => 'add_movie',
+                'id' => $data['imdbID'],
+                'title' => $data['Title'],
+                'year' => $data['Year'],
+                'rating' => $data['Rated'],
+                'released' => $data['Released'],
+                'runtime' => $data['Runtime'],
+                'genre' => $data['Genre'],
+                'director' => $data['Director'],
+                'writer' => $data['Writer'],
+                'actors' => $data['Actors'],
+                'plot' => $data['Plot'],
+                'language' => $data['Language'],
+                'country' => $data['Country'],
+                'poster' => $data['Poster']
+            ));
+        }
         exit();
     }
 }
