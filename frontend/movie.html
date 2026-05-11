@@ -78,7 +78,7 @@
                 if (XMLHttpInstance.readyState === 4) {
                     try {
                         var response = JSON.parse(XMLHttpInstance.responseText);
-                        var reviews = response.reviews || response;
+                        var reviews = response.reviews;
                         showReviews(reviews);
                     } catch(err) {
                         document.getElementById("reviewsList").innerHTML = "<p>Error retrieving the reviews.</p>";
