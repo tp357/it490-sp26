@@ -21,7 +21,7 @@ $existsResponse = $client->send_request(array(
     'movie_id' => $movie_id
 ));
 
-if (isset($existsResponse['exists']) && $existsResponse['exists'] === true) {
+if (isset($existsResponse['exists'])) {
     $response = $client->send_request(array(
         'type' => 'get_one_movie',
         'movie_id' => $movie_id
