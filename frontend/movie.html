@@ -74,9 +74,11 @@
                 if (XMLHttpInstance.readyState === 4) {
                     try { 
                         var response = JSON.parse(XMLHttpInstance.responseText);
+                        console.log("Reviews response:", response);
                         if (XMLHttpInstance.status === 200 && response.reviews) {
                             showReviews(response.reviews);
                         } else {
+                            console.log("No reviews in response, status:", XMLHttpInstance.status, "reviews:", response.reviews);
                             document.getElementById("reviewsList").innerHTML = "<p>No reviews found for this movie.</p>";
                         }
                     } catch(err) {
