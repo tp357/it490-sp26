@@ -35,8 +35,7 @@ if (preg_match('/^tt\d+$/', $movie_id)) {
     $omdbUrl = "https://www.omdbapi.com/?t=" . urlencode($movie_id) . "&apikey=" . $api_key;
 }
 
-if ($omdbUrl) {
-    if (function_exists('curl_init')) {
+if (function_exists('curl_init')) {
         $ch = curl_init($omdbUrl);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
@@ -90,7 +89,6 @@ if ($omdbUrl) {
         ));
         exit();
     }
-}
 
 http_response_code(404);
 echo json_encode(array('status' => 'error', 'message' => 'not found'));
