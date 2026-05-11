@@ -97,9 +97,9 @@
             reviews.forEach(function(review) {
                 var div = document.createElement("div");
                 div.className = "review";
-                var username = review.username || review.USERNAME || review.user_id || 'Unknown';
-                var rating = review.rating || review.RATING || 'N/A';
-                var reasoning = review.reasoning || review.REASONING || '';
+                var username = review.USERNAME || review.username || 'Unknown';
+                var rating = review.RATING || review.rating || 'N/A';
+                var reasoning = review.REASONING || review.reasoning || '';
                 div.innerHTML = `
                     <p>User: ${username}</p>
                     <p>Rating: ${rating}</p>
