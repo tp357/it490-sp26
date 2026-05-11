@@ -15,15 +15,22 @@ if (empty($input['movie_id'])) {
 $movie_id = $input['movie_id'];
 
 $client = new rabbitMQClient(__DIR__.'/../servers.ini', 'MovieDBServer');
-$response = $client->send_request(array(
-    'type' => 'get_one_movie',
+
+$existsResponse = $client->send_request(array(
+    'type' => 'if_movie_exists',
     'movie_id' => $movie_id
 ));
 
-if (is_array($response) && ($response['status'] ?? '') === 'success' && isset($response['movie'])) {
-    http_response_code(200);
-    echo json_encode($response);
-    exit();
+if (is_array($existsResponse) && !empty($existsResponse['exists'])) {
+    $response = $client->send_request(array(
+        'type' => 'get_one_movie',
+        'movie_id' => $movie_id
+    ));
+    if (is_array($response) && ($response['status'] ?? '') === 'success' && isset($response['movie'])) {
+        http_response_code(200);
+        echo json_encode($response);
+        exit();
+    }
 }
 
 $api_key = 'b28607cf';
@@ -67,6 +74,26 @@ if ($omdbUrl) {
         );
         http_response_code(200);
         echo json_encode(array('status' => 'success', 'movie' => $movie));
+        if (function_exists('fastcgi_finish_request')) { fastcgi_finish_request(); }
+        else { @ob_end_flush(); @flush(); }
+
+        $client->publish(array(
+            'type' => 'add_movie',
+            'id' => $data['imdbID'],
+            'title' => $data['Title'],
+            'year' => $data['Year'],
+            'rating' => $data['Rated'],
+            'released' => $data['Released'],
+            'runtime' => $data['Runtime'],
+            'genre' => $data['Genre'],
+            'director' => $data['Director'],
+            'writer' => $data['Writer'],
+            'actors' => $data['Actors'],
+            'plot' => $data['Plot'],
+            'language' => $data['Language'],
+            'country' => $data['Country'],
+            'poster' => $data['Poster']
+        ));
         exit();
     }
 }
