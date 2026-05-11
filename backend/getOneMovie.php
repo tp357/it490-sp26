@@ -16,16 +16,20 @@ $movie_id = $input['movie_id'];
 
 $client = new rabbitMQClient(__DIR__.'/../servers.ini', 'MovieDBServer');
 
-// Try to get from DB first - if it exists, return it without adding
-$response = $client->send_request(array(
-    'type' => 'get_one_movie',
+$existsResponse = $client->send_request(array(
+    'type' => 'if_movie_exists',
     'movie_id' => $movie_id
 ));
-
-if (is_array($response) && ($response['status'] ?? '') === 'success' && isset($response['movie'])) {
-    http_response_code(200);
-    echo json_encode($response);
-    exit();
+if (is_array($existsResponse) && isset($existsResponse['exists']) && $existsResponse['exists'] === true) {
+    $response = $client->send_request(array(
+        'type' => 'get_one_movie',
+        'movie_id' => $movie_id
+    ));
+    if (is_array($response) && ($response['status'] ?? '') === 'success' && isset($response['movie'])) {
+        http_response_code(200);
+        echo json_encode($response);
+        exit();
+    }
 }
 
 $api_key = 'b28607cf';

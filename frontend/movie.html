@@ -72,13 +72,10 @@
             XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
             XMLHttpInstance.onreadystatechange = function() {
                 if (XMLHttpInstance.readyState === 4) {
-                    try { 
+                    try {
                         var response = JSON.parse(XMLHttpInstance.responseText);
-                        if (XMLHttpInstance.status === 200 && response.reviews) {
-                            showReviews(response.reviews);
-                        } else {
-                            document.getElementById("reviewsList").innerHTML = "<p>No reviews found for this movie.</p>";
-                        }
+                        var reviews = response.reviews || response;
+                        showReviews(reviews);
                     } catch(err) {
                         document.getElementById("reviewsList").innerHTML = "<p>Error retrieving the reviews.</p>";
                     }
@@ -90,6 +87,9 @@
         function showReviews(reviews) {
             var list = document.getElementById("reviewsList");
             list.innerHTML = '';
+            if (!Array.isArray(reviews)) {
+                reviews = [reviews];
+            }
             if (reviews.length === 0) {
                 list.innerHTML = "<p>No reviews found for this movie.</p>";
                 return;
@@ -111,11 +111,11 @@
 
 
         document.addEventListener('DOMContentLoaded', function() {
+            var movie_id = getMovieID();
             var form = document.getElementById("reviewForm");
             if (form) {
                 form.onsubmit = function(e){
                     e.preventDefault();
-                    var movie_id = getMovieID();
                     var rating = document.getElementById("rating").value;
                     var reasoning = document.getElementById("reasoning").value;
                     var sessionID = localStorage.getItem("sessionID");

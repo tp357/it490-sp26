@@ -18,20 +18,6 @@ $response = $client->send_request(array(
     'movie_id' => $input['movie_id']
 ));
 
-if (is_array($response)) {
-    if (isset($response[0]) && !isset($response['reviews'])) {
-        $response = array('status' => 'success', 'reviews' => $response);
-    }
-    if (!isset($response['reviews']) || !is_array($response['reviews'])) {
-        $response['reviews'] = array();
-    }
-    if (!isset($response['status'])) {
-        $response['status'] = 'success';
-    }
-    http_response_code(200);
-    echo json_encode($response);
-} else {
-    http_response_code(200);
-    echo json_encode(array('status' => 'success', 'reviews' => array()));
-}
+http_response_code(200);
+echo json_encode($response);
 ?>
