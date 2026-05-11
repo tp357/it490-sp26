@@ -16,16 +16,11 @@ $movie_id = $input['movie_id'];
 
 $client = new rabbitMQClient(__DIR__.'/../servers.ini', 'MovieDBServer');
 
-$existsResponse = $client->send_request(array(
-    'type' => 'if_movie_exists',
+$response = $client->send_request(array(
+    'type' => 'get_one_movie',
     'movie_id' => $movie_id
 ));
-
-if (isset($existsResponse['exists']) && $existsResponse['exists'] === true) {
-    $response = $client->send_request(array(
-        'type' => 'get_one_movie',
-        'movie_id' => $movie_id
-    ));
+if (is_array($response)) {
     if (isset($response['movie'])) {
         $response = array('status' => 'success', 'movie' => $response['movie']);
     } else {
