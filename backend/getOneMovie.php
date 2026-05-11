@@ -21,11 +21,7 @@ $response = $client->send_request(array(
     'movie_id' => $movie_id
 ));
 if (is_array($response)) {
-    if (isset($response['movie'])) {
-        $response = array('status' => 'success', 'movie' => $response['movie']);
-    } else {
-        $response = array('status' => 'success', 'movie' => $response);
-    }
+    $response = array('status' => 'success', 'movie' => $response);
     http_response_code(200);
     echo json_encode($response);
     exit();
