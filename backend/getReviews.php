@@ -18,13 +18,15 @@ $response = $client->send_request(array(
     'movie_id' => $input['movie_id']
 ));
 
-if (is_array($response) && ($response['status'] ?? '') === 'success') {
-    if (isset($response['ratings']) && !isset($response['reviews'])) {
-        $response['reviews'] = $response['ratings'];
-        unset($response['ratings']);
+if (is_array($response)) {
+    if (isset($response[0]) && !isset($response['reviews'])) {
+        $response = array('status' => 'success', 'reviews' => $response);
     }
     if (!isset($response['reviews']) || !is_array($response['reviews'])) {
         $response['reviews'] = array();
+    }
+    if (!isset($response['status'])) {
+        $response['status'] = 'success';
     }
     http_response_code(200);
     echo json_encode($response);

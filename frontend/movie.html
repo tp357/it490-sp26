@@ -51,27 +51,7 @@
                 <p>Rating: ${movie.rating}</p>
                 <p>Genre: ${movie.genre}</p>
                 <p>Director: ${movie.director}</p>
-                <button id="addToWatchlist">Add to Watchlist</button>
             `; // possibly add language, runtime, actors, country? idk 
-            var movie_id = getMovieID();
-            document.getElementById("addToWatchlist").onclick = function() {
-                var user_id = localStorage.getItem("user_id");
-                var url = "../backend/addToWatchlist.php";
-                var message = JSON.stringify({ "movie_id": movie_id, "user_id": user_id });
-                const XMLHttpInstance = new XMLHttpRequest();
-                XMLHttpInstance.open("POST", url, true);
-                XMLHttpInstance.setRequestHeader("Content-Type", "application/json");
-                XMLHttpInstance.onreadystatechange = function() {
-                    if (XMLHttpInstance.readyState === 4) {
-                        if (XMLHttpInstance.status === 200) {
-                            alert("Movie added to watchlist.");
-                        } else {
-                            alert("An issue occurred somewhere.");
-                        }
-                    }
-                };
-                XMLHttpInstance.send(message);
-            };
         }
 
         var sessionID = localStorage.getItem('sessionID');
@@ -100,6 +80,7 @@
                             document.getElementById("reviewsList").innerHTML = "<p>No reviews found for this movie.</p>";
                         }
                     } catch(err) {
+                        console.error("Reviews error:", err, XMLHttpInstance.responseText);
                         document.getElementById("reviewsList").innerHTML = "<p>Error retrieving the reviews.</p>";
                     }
                 }
@@ -231,7 +212,6 @@
         
 	<nav>
 		<a href="home.html">Home</a>
-		<a href="watchlist.html">Watchlist</a> 
 		<a href="forum.html">Forum</a>
 		<a href="notifications.html">Notifications</a>
 		<button id="logout" onclick="logout()">Logout</button>
